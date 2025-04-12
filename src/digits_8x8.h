@@ -1,6 +1,29 @@
 #ifndef DIGITS_8x8_H
 #define DIGITS_8x8_H
 
+const std::vector<std::string> custom_image = {
+	"This is a custom",
+	"size image that",
+	"can be any height",
+	"and width you want",
+	"  ____  ",
+	" /    \\ ",
+	"|      |",
+	" \\____/ "
+};
+
+// Рисуем изображение с оранжевым текстом
+const std::vector<std::string> digit_0 = {
+	"  XXXX  ",
+	" X    X ",
+	" X  X X ",
+	" X  X X ",
+	" X X  X ",
+	" X X  X ",
+	" X    X ",
+	"  XXXX  "
+};
+
 const std::string digits_8x8[] = {\
 "\
   XXXX  \
