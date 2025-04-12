@@ -92,67 +92,67 @@ bool NTerminalDisplay::setRgbColor(short r_text, short g_text, short b_text,
 
 // Залить весь терминал цветом фона (стандартные цвета)
 void NTerminalDisplay::fillBackground(short bg_color) {
-        std::lock_guard<std::mutex> lock(colors_mutex);
-        this->bg_color = bg_color;
-        bkgd(COLOR_PAIR(DEFAULT) | ' ');
-        init_pair(DEFAULT, COLOR_WHITE, bg_color);
-        needs_redraw = true;
+	std::lock_guard<std::mutex> lock(colors_mutex);
+	this->bg_color = bg_color;
+	bkgd(COLOR_PAIR(DEFAULT) | ' ');
+	init_pair(DEFAULT, COLOR_WHITE, bg_color);
+	needs_redraw = true;
 }
 
 // Залить весь терминал RGB-цветом фона (если поддерживается)
 bool NTerminalDisplay::fillBackgroundRgb(short r, short g, short b) {
-        if (!supports_rgb) return false;
+	if (!supports_rgb) return false;
+	
+	std::lock_guard<std::mutex> lock(colors_mutex);
+	
+	// Создаем новый цвет фона
+	init_color(102, r * 1000 / 255, g * 1000 / 255, b * 1000 / 255);
 
-        std::lock_guard<std::mutex> lock(colors_mutex);
-        
-        // Создаем новый цвет фона
-        init_color(102, r * 1000 / 255, g * 1000 / 255, b * 1000 / 255);
-        
-        // Обновляем пару DEFAULT
-        init_pair(DEFAULT, COLOR_WHITE, 102);
-        bkgd(COLOR_PAIR(DEFAULT) | ' ');
-        
-        needs_redraw = true;
-        return true;
+	// Обновляем пару DEFAULT
+	init_pair(DEFAULT, COLOR_WHITE, 102);
+	bkgd(COLOR_PAIR(DEFAULT) | ' ');
+	
+	needs_redraw = true;
+	return true;
 }
 
 // Проверить, поддерживается ли RGB
 bool NTerminalDisplay::isRgbSupported() const {
-        return supports_rgb;
+	return supports_rgb;
 }
 
 //
 void NTerminalDisplay::initNcurses() {
-        initscr();
-        cbreak();
-        noecho();
-        keypad(stdscr, TRUE);
-        curs_set(0);
-        timeout(0);
+	initscr();
+	cbreak();
+	noecho();
+	keypad(stdscr, TRUE);
+	curs_set(0);
+	timeout(0);
+	
+	// Проверка поддержки цветов
+	if (!has_colors()) {
+		endwin();
+		fprintf(stderr, "Терминал не поддерживает цвета\n");
+		return;
+	}
 
-        // Проверка поддержки цветов
-        if (!has_colors()) {
-            endwin();
-            fprintf(stderr, "Терминал не поддерживает цвета\n");
-            return;
-        }
+	start_color();
+	use_default_colors();
 
-        start_color();
-        use_default_colors();
-
-        // Проверка поддержки RGB (256 или truecolor)
-        supports_rgb = (can_change_color() && COLORS >= 256);
-        
-        // Инициализация стандартных цветов
-        init_pair(DEFAULT, COLOR_WHITE, bg_color);
-        init_pair(RED_TEXT, COLOR_RED, bg_color);
-        init_pair(GREEN_TEXT, COLOR_GREEN, bg_color);
-        init_pair(BLUE_TEXT, COLOR_BLUE, bg_color);
-        init_pair(YELLOW_TEXT, COLOR_YELLOW, bg_color);
-        init_pair(CYAN_TEXT, COLOR_CYAN, bg_color);
-        init_pair(MAGENTA_TEXT, COLOR_MAGENTA, bg_color);
-        init_pair(WHITE_TEXT, COLOR_WHITE, bg_color);
-        init_pair(CUSTOM, COLOR_WHITE, bg_color);
+	// Проверка поддержки RGB (256 или truecolor)
+	supports_rgb = (can_change_color() && COLORS >= 256);
+	
+	// Инициализация стандартных цветов
+	init_pair(DEFAULT, COLOR_WHITE, bg_color);
+	init_pair(RED_TEXT, COLOR_RED, bg_color);
+	init_pair(GREEN_TEXT, COLOR_GREEN, bg_color);
+	init_pair(BLUE_TEXT, COLOR_BLUE, bg_color);
+	init_pair(YELLOW_TEXT, COLOR_YELLOW, bg_color);
+	init_pair(CYAN_TEXT, COLOR_CYAN, bg_color);
+	init_pair(MAGENTA_TEXT, COLOR_MAGENTA, bg_color);
+	init_pair(WHITE_TEXT, COLOR_WHITE, bg_color);
+	init_pair(CUSTOM, COLOR_WHITE, bg_color);
 }
 
 // Очистка ресурсов ncurses
@@ -168,12 +168,12 @@ void NTerminalDisplay::start() {
 
 //
 void NTerminalDisplay::stop() {
-        running = false;
-        cv.notify_all();
-        if (worker_thread.joinable()) {
-            worker_thread.join();
-        }
-        endwin();
+	running = false;
+	cv.notify_all();
+	if (worker_thread.joinable()) {
+		worker_thread.join();
+	}
+	endwin();
 }
 
 //
