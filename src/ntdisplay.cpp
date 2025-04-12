@@ -11,39 +11,13 @@
 #include "digits_8x8.h"
 #include "ntdisplay.h"
 
-//class TerminalImageDisplay {
-//public:
-    // Цветовые пары (текст/фон)
-    /*enum ColorPair {
-        DEFAULT = 1,
-        RED_TEXT,
-        GREEN_TEXT,
-        BLUE_TEXT,
-        YELLOW_TEXT,
-        CYAN_TEXT,
-        MAGENTA_TEXT,
-        WHITE_TEXT,
-        CUSTOM
-    };*/
-
-    // Поддерживаемые размеры изображений
-    /*enum ImageSize {
-        SIZE_4x4,
-        SIZE_8x4,
-        SIZE_4x8,
-        SIZE_8x8,
-        SIZE_8x16,
-        SIZE_16x8,
-        SIZE_16x16
-    };*/
-
-TerminalImageDisplay::TerminalImageDisplay() : 
+NTerminalDisplay::NTerminalDisplay() : 
 	running(false), 
-        needs_redraw(false), 
-        term_width(0), 
-        term_height(0),
-        bg_color(COLOR_BLACK),
-        supports_rgb(false) {
+	needs_redraw(false), 
+	term_width(0), 
+	term_height(0), 
+	bg_color(COLOR_BLACK), 
+	supports_rgb(false) {
         
 	// Инициализация ncurses и проверка поддержки RGB
 	initNcurses();
@@ -52,84 +26,81 @@ TerminalImageDisplay::TerminalImageDisplay() :
 	start();
 }
 
-TerminalImageDisplay::~TerminalImageDisplay() {
+NTerminalDisplay::~NTerminalDisplay() {
 	stop();
 }
 
 // Добавить изображение для отображения
-void TerminalImageDisplay::addImage(const std::vector<std::string>& image, 
-                  int x, int y, 
-                  //ColorPair color = DEFAULT,
-	ColorPair color,
-                  //ImageSize size = SIZE_8x8) {
-	ImageSize size) {
-        std::lock_guard<std::mutex> lock(images_mutex);
-        ImageInfo info;
-        info.image = image;
-        info.x = x;
-        info.y = y;
-        info.color = color;
-        info.size = size;
-        images.push_back(info);
-        needs_redraw = true;
+void NTerminalDisplay::addImage(const std::vector<std::string>& image, 
+											int x, int y, 
+											ColorPair color, 
+											ImageSize size) {
+	std::lock_guard<std::mutex> lock(images_mutex);
+	ImageInfo info;
+	info.image = image;
+	info.x = x;
+	info.y = y;
+	info.color = color;
+	info.size = size;
+	images.push_back(info);
+	needs_redraw = true;
 }
 
 // Добавить изображение произвольного размера
-void TerminalImageDisplay::addImageArbitrarySize(const std::vector<std::string>& image,
-			int x, int y,
-			ColorPair color) {
+void NTerminalDisplay::addImageArbitrarySize(const std::vector<std::string>& image, 
+												int x, int y, ColorPair color) {
 	std::lock_guard<std::mutex> lock(images_mutex);
 	ImageInfo info;
-        info.image = image;
-        info.x = x;
-        info.y = y;
-        info.color = color;
-        info.size = SIZE_16x16; // Placeholder, ignored in drawing
-        images.push_back(info);
-        needs_redraw = true;
+	info.image = image;
+	info.x = x;
+	info.y = y;
+	info.color = color;
+	info.size = SIZE_16x16; // Placeholder, ignored in drawing
+	images.push_back(info);
+	needs_redraw = true;
 }
 
 // Очистить все изображения
-void TerminalImageDisplay::clearImages() {
-        std::lock_guard<std::mutex> lock(images_mutex);
-        images.clear();
-        needs_redraw = true;
+void NTerminalDisplay::clearImages() {
+	std::lock_guard<std::mutex> lock(images_mutex);
+	images.clear();
+	needs_redraw = true;
 }
 
 // Установить пользовательские цвета (текст/фон) в стандартной палитре
-void TerminalImageDisplay::setCustomColor(short text_color, short bg_color) {
-        std::lock_guard<std::mutex> lock(colors_mutex);
-        init_pair(CUSTOM, text_color, bg_color);
+void NTerminalDisplay::setCustomColor(short text_color, short bg_color) {
+	std::lock_guard<std::mutex> lock(colors_mutex);
+	init_pair(CUSTOM, text_color, bg_color);
 }
 
 // Установить RGB-цвет текста и фона (если поддерживается)
-bool TerminalImageDisplay::setRgbColor(short r_text, short g_text, short b_text,
+bool NTerminalDisplay::setRgbColor(short r_text, short g_text, short b_text,
                      short r_bg, short g_bg, short b_bg) {
-        if (!supports_rgb) return false;
-
-        std::lock_guard<std::mutex> lock(colors_mutex);
-        
-        // Создаем новый цвет в палитре
-        init_color(100, r_text * 1000 / 255, g_text * 1000 / 255, b_text * 1000 / 255);
-        init_color(101, r_bg * 1000 / 255, g_bg * 1000 / 255, b_bg * 1000 / 255);
-        
-        // Связываем цветовую пару
-        init_pair(CUSTOM, 100, 101);
-        
-        return true;
+	if (!supports_rgb) return false;
+	
+	std::lock_guard<std::mutex> lock(colors_mutex);
+	
+	// Создаем новый цвет в палитре
+	init_color(100, r_text * 1000 / 255, g_text * 1000 / 255, b_text * 1000 / 255);
+	init_color(101, r_bg * 1000 / 255, g_bg * 1000 / 255, b_bg * 1000 / 255);
+	
+	// Связываем цветовую пару
+	init_pair(CUSTOM, 100, 101);
+	
+	return true;
 }
 
-    // Залить весь терминал цветом фона (стандартные цвета)
-    void TerminalImageDisplay::fillBackground(short bg_color) {
+// Залить весь терминал цветом фона (стандартные цвета)
+void NTerminalDisplay::fillBackground(short bg_color) {
         std::lock_guard<std::mutex> lock(colors_mutex);
         this->bg_color = bg_color;
         bkgd(COLOR_PAIR(DEFAULT) | ' ');
         init_pair(DEFAULT, COLOR_WHITE, bg_color);
         needs_redraw = true;
-    }
+}
 
 // Залить весь терминал RGB-цветом фона (если поддерживается)
-bool TerminalImageDisplay::fillBackgroundRgb(short r, short g, short b) {
+bool NTerminalDisplay::fillBackgroundRgb(short r, short g, short b) {
         if (!supports_rgb) return false;
 
         std::lock_guard<std::mutex> lock(colors_mutex);
@@ -145,33 +116,13 @@ bool TerminalImageDisplay::fillBackgroundRgb(short r, short g, short b) {
         return true;
 }
 
-    // Проверить, поддерживается ли RGB
-    bool TerminalImageDisplay::isRgbSupported() const {
+// Проверить, поддерживается ли RGB
+bool NTerminalDisplay::isRgbSupported() const {
         return supports_rgb;
-    }
+}
 
-/*private:
-    struct ImageInfo {
-        std::vector<std::string> image;
-        int x;
-        int y;
-        ColorPair color;
-        ImageSize size;
-    };
-
-    std::vector<ImageInfo> images;
-    std::mutex images_mutex;
-    std::mutex colors_mutex;
-    std::atomic<bool> running;
-    std::atomic<bool> needs_redraw;
-    std::atomic<int> term_width;
-    std::atomic<int> term_height;
-    std::thread worker_thread;
-    std::condition_variable cv;
-    short bg_color;
-    bool supports_rgb;
-*/
-void TerminalImageDisplay::initNcurses() {
+//
+void NTerminalDisplay::initNcurses() {
         initscr();
         cbreak();
         noecho();
@@ -202,28 +153,31 @@ void TerminalImageDisplay::initNcurses() {
         init_pair(MAGENTA_TEXT, COLOR_MAGENTA, bg_color);
         init_pair(WHITE_TEXT, COLOR_WHITE, bg_color);
         init_pair(CUSTOM, COLOR_WHITE, bg_color);
-    }
+}
 
 // Очистка ресурсов ncurses
-void TerminalImageDisplay::cleanupNcurses(){
+void NTerminalDisplay::cleanupNcurses(){
+	endwin();
 }
-	
 
-    void TerminalImageDisplay::start() {
-        running = true;
-        worker_thread = std::thread(&TerminalImageDisplay::worker, this);
-    }
+//
+void NTerminalDisplay::start() {
+	running = true;
+	worker_thread = std::thread(&NTerminalDisplay::worker, this);
+}
 
-    void TerminalImageDisplay::stop() {
+//
+void NTerminalDisplay::stop() {
         running = false;
         cv.notify_all();
         if (worker_thread.joinable()) {
             worker_thread.join();
         }
         endwin();
-    }
+}
 
-    void TerminalImageDisplay::worker() {
+//
+void NTerminalDisplay::worker() {
         signal(SIGWINCH, [](int) {});
 
         getmaxyx(stdscr, term_height, term_width);
@@ -253,9 +207,10 @@ void TerminalImageDisplay::cleanupNcurses(){
         }
 
         endwin();
-    }
+}
 
-    void TerminalImageDisplay::drawImages() {
+//
+void NTerminalDisplay::drawImages() {
         std::lock_guard<std::mutex> lock(images_mutex);
         
         clear();
@@ -284,9 +239,9 @@ void TerminalImageDisplay::cleanupNcurses(){
         }
         
         refresh();
-    }
+}
 
 // Обработчик сигнала изменения размера терминала
-void TerminalImageDisplay::handleResize(int sig){
+void NTerminalDisplay::handleResize(int sig){
 }
 //};

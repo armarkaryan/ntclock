@@ -13,7 +13,7 @@
 
 #include "digits_8x8.h"
 
-class TerminalImageDisplay {
+class NTerminalDisplay {
 public:
     // Цветовые пары (текст/фон)
     enum ColorPair {
@@ -40,8 +40,8 @@ public:
     };
 
 	// Конструктор/деструктор
-	TerminalImageDisplay();  // Инициализирует библиотеку ncurses
-	~TerminalImageDisplay(); // Освобождает ресурсы ncurses и останавливает поток
+	NTerminalDisplay();  // Инициализирует библиотеку ncurses
+	~NTerminalDisplay(); // Освобождает ресурсы ncurses и останавливает поток
 
 	// Добавить изображение для отображения
 	void addImage(const std::vector<std::string>& image, 
