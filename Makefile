@@ -6,8 +6,8 @@ BUILD_DIR := build
 OBJ_DIR := obj
 
 # Автоматически находим все .cpp файлы в src/
-SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
-#SOURCES := $(SRC_DIR)/ntclock.cpp $(SRC_DIR)/ntdisplay.cpp
+#SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
+SOURCES := $(SRC_DIR)/ntclock.cpp $(SRC_DIR)/ntdisplay.cpp
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 EXECUTABLE := $(BUILD_DIR)/ntclock
 
