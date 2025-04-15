@@ -1,6 +1,9 @@
 #ifndef DIGITS_8x8_H
 #define DIGITS_8x8_H
 
+#include <vector>
+#include <string>
+
 const std::vector<std::string> custom_image = {
 	"This is a custom",
 	"size image that",
