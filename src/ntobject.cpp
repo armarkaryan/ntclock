@@ -1,59 +1,60 @@
-// ntobject.cpp
-// Implementation of the NTObject class
+/*!	\file		ntobject.cpp
+ *	\brief		Implementation of the NTObject class
+ *	\author		Arthur Markaryan
+ *	\date		18.04.2025
+ */
 
 #include "ntobject.h"
 
-// Constructor
+/*!	\brief		Constructor
+ *	\param[in]	parent	Pointer to the parent object (default: nullptr)
+ *	\param[in]	name	Object name (default: empty string)
+ */
 NTObject::NTObject(NTObject *parent, const std::string &name) :
-    _parent(parent), _name(name)
+    _parent(parent),
+    _name(name)
 {
-    //_parent(parent),	// Initialize parent pointer to null
-    //_name(name)			// Initialize name to empty string
-    // Basic object initialization
-    // All members are already initialized in the initializer list
+    // Initialization handled in member initializer list
 }
 
-// Destructor
+/*!	\brief	Destructor
+ *	\note	Parent-child relationships should be managed by the owner class
+ */
 NTObject::~NTObject()
 {
-    // Currently no dynamic resources to free
-    // Parent-child relationships should be managed by the owner class
+    // No dynamic resources to free
 }
 
-// Sets the parent object
-// Parameters:
-//   parent - pointer to the parent object (can be null)
+/*!	\brief		Sets the parent object
+ *	\param[in]	parent	Pointer to the new parent object
+ *	\note		Simple assignment, no reference counting or ownership management
+ */
 void NTObject::setParent(NTObject *parent)
 {
-    // Simple assignment, no reference counting or ownership management
     _parent = parent;
 }
 
-// Returns a pointer to the parent object
-// Returns:
-//   Pointer to the parent object or nullptr if no parent exists
+/*!	\brief		Gets the parent object
+ *	\return		Pointer to the parent object or nullptr if none exists
+ */
 NTObject *NTObject::parent() const
 {
     return _parent;
 }
 
-// Sets the name of the object
-// Parameters:
-//   name - const reference to the new name string
+/*!	\brief		Sets the object name
+ *	\param[in]	name	New name for the object
+ */
 void NTObject::setName(const std::string &name)
 {
-    // Copy the string content
     _name = name;
 }
 
-// Returns a pointer to the object's name
-// Returns:
-//   Pointer to the internal name string (note: this gives direct access to internal data)
-//   Consider returning const std::string* or const reference instead for better encapsulation
+/*!	\brief		Gets the object name
+ *	\return		Copy of the object's name string
+ *	\note		Returns by value to maintain encapsulation
+ */
 std::string NTObject::name() const
 {
-    // WARNING: Returning direct pointer to internal data breaks encapsulation
-    // In production code, consider returning const std::string* or const std::string&
-    //return const_cast<std::string*>(&_name);
     return _name;
 }
