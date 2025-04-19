@@ -1,131 +1,59 @@
-#ifndef NTDISPLAY_H
-#define NTDISPLAY_H
+/*!	\file		ntobject.h
+ *	\brief		Base class module for NT (header file).
+ *	\details	Contains the NTObject class definitions.
+ *	\author		Arthur Markaryan
+ *	\date		18.04.2025
+ *	\copyright	Arthur Markaryan
+ */
 
+#ifndef NTOBJECT_H
+#define NTOBJECT_H
+
+/*!	\brief	Standard vector library */
 #include <vector>
+/*!	\brief	Standard string library */
 #include <string>
-#include <mutex>
-#include <atomic>
-#include <thread>
-#include <condition_variable>
-#include <ncurses.h>
-#include <unistd.h>
-#include <signal.h>
 
-#include "digits_8x8.h"
-
-class NTerminalDisplay {
+/*!	\class      NTObject
+ *	\brief      Base class for NT objects.
+ *	\details	Represents the core functionality for objects in the NT system.
+ */
+class NTObject {
 public:
-    // Цветовые пары (текст/фон)
-    enum ColorPair {
-        DEFAULT = 1,    // Стандартная цветовая пара (обычно белый на черном)
-        RED_TEXT,       // Красный текст
-        GREEN_TEXT,     // Зеленый текст  
-        BLUE_TEXT,      // Синий текст
-        YELLOW_TEXT,    // Желтый текст
-        CYAN_TEXT,      // Бирюзовый текст
-        MAGENTA_TEXT,   // Пурпурный текст
-        WHITE_TEXT,     // Белый текст
-        CUSTOM          // Пользовательские цвета
-    };
+    /*!	\brief		Constructor
+     *	\param		parent	Pointer to the parent object (default: nullptr)
+     *	\param		name	Object name (default: empty string)
+     */
+    NTObject(NTObject *parent = nullptr, const std::string &name = "");
 
-    // Поддерживаемые размеры изображений
-    enum ImageSize {
-        SIZE_4x4,      // 4 строки, 4 символа в ширину
-        SIZE_8x4,       // 8 строк, 4 символа
-        SIZE_4x8,       // 4 строки, 8 символов  
-        SIZE_8x8,       // 8x8 символов (по умолчанию)
-        SIZE_8x16,      // 8 строк, 16 символов
-        SIZE_16x8,      // 16 строк, 8 символов
-        SIZE_16x16      // 16x16 символов
-    };
+    /*!	\brief	Destructor */
+    ~NTObject();
 
-	// Конструктор/деструктор
-	NTerminalDisplay();  // Инициализирует библиотеку ncurses
-	~NTerminalDisplay(); // Освобождает ресурсы ncurses и останавливает поток
+    /*!	\brief		Sets the parent object
+     *	\details	Updates the parent-child relationship.
+     *	\param		parent	Pointer to the parent object
+     *	\note		Pass nullptr to remove parent relationship
+     */
+    void setParent(NTObject *parent);
 
-	// Добавить изображение для отображения
-	void addImage(const std::vector<std::string>& image, 
-					int x, int y,
-					ColorPair color = DEFAULT,
-					ImageSize size = SIZE_8x8);
-					// image - вектор строк, где каждая строка представляет линию изображения
-					// x, y - позиция верхнего левого угла
-					// color - цветовая схема
-					// size - стандартный размер изображения
+    /*!	\brief		Gets the parent object
+     *	\return		Pointer to the parent object or nullptr if none exists
+     */
+    NTObject *parent() const;
 
-	// Добавить изображение произвольного размера
-	// Аналогично addImage, но без ограничений по размеру
-	void addImageArbitrarySize(const std::vector<std::string>& image, 
-									int x, int y,
-									ColorPair color = DEFAULT);
-									
-	// Очистить все изображения
-	// Удаляет все добавленные изображения
-	void clearImages();
+    /*!	\brief		Sets the object name
+     *	\param		name	New name for the object
+     */
+    void setName(const std::string &name);
 
-	// Установить пользовательские цвета (текст/фон) в стандартной палитре
-	// text_color - цвет текста (номер цвета ncurses)
-	// bg_color - цвет фона (номер цвета ncurses)
-	void setCustomColor(short text_color, short bg_color);
+    /*!	\brief		Gets the object name
+     *	\return		Current name of the object
+     */
+    std::string name() const;
 
-	// Установить RGB-цвет текста и фона (если поддерживается)
-	bool setRgbColor(short r_text, short g_text, short b_text,
-						short r_bg, short g_bg, short b_bg);
-						// Возвращает true если RGB цвета поддерживаются
-						// r,g,b значения от 0 до 1000 (ncurses)
-
-	// Залить весь терминал цветом фона (стандартные цвета)
-	void fillBackground(short bg_color);  // Заливка стандартным цветом
-	
-	// Залить весь терминал RGB-цветом фона (если поддерживается)
-	bool fillBackgroundRgb(short r, short g, short b);
-						// Возвращает true если операция успешна
-	
-	// Проверить, поддерживается ли RGB
-	bool isRgbSupported() const;  // Проверка поддержки RGB цветов
-	
 private:
-	// Структура для хранения информации об изображении
-	struct ImageInfo {
-		std::vector<std::string> image;  // Само изображение
-		int x;                          // Позиция X
-		int y;                          // Позиция Y
-		ColorPair color;                // Цветовая схема
-		ImageSize size;                 // Размер изображения
-	};
-
-	std::vector<ImageInfo> images;      // Вектор всех изображений
-	std::mutex images_mutex;           // Мьютекс для доступа к images
-	std::mutex colors_mutex;           // Мьютекс для работы с цветами
-	std::atomic<bool> running;         // Флаг работы потока отрисовки
-	std::atomic<bool> needs_redraw;    // Флаг необходимости перерисовки
-	std::atomic<int> term_width;       // Текущая ширина терминала
-	std::atomic<int> term_height;      // Текущая высота терминала
-	std::thread worker_thread;         // Поток отрисовки
-	std::condition_variable cv;        // Условная переменная для синхронизации
-	short bg_color;                    // Текущий цвет фона
-	bool supports_rgb;                 // Флаг поддержки RGB
-	
-	// Инициализация библиотеки ncurses
-	void initNcurses();
-	
-	// Очистка ресурсов ncurses
-	void cleanupNcurses();
-	
-	// Запуск потока отрисовки
-	void start();
-	
-	// Остановка потока отрисовки
-	void stop();
-	
-	// Основной цикл потока отрисовки
-	void worker();
-	
-	// Отрисовка всех изображений
-	void drawImages();
-
-	// Обработчик сигнала изменения размера терминала
-	static void handleResize(int sig);
+    NTObject *_parent;	/*!< Pointer to parent object */
+    std::string _name;	/*!< Object name */
 };
 
-#endif // NTDISPLAY_H
+#endif // NTOBJECT_H

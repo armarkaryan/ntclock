@@ -8,11 +8,32 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "digits_8x8.h"
+//#include "digits_8x8.h"
 #include "ntdisplay.h"
 
-NTerminalDisplay::NTerminalDisplay() : 
-	running(false), 
+
+NTerminalDisplay::NTerminalDisplay(NTObject* parent, const std::string& name)
+	: NTObject(parent, name)  // Pass parameters directly, not using parent()
+{
+	// initialization code
+	running = false;
+	needs_redraw =false;
+	term_width = 0;
+	term_height = 0;
+	bg_color = COLOR_BLACK;
+	supports_rgb = false;
+
+	// Инициализация ncurses и проверка поддержки RGB
+	initNcurses();
+
+	// Запуск потока обработки
+	start();
+}
+
+//NTerminalDisplay::NTerminalDisplay() :
+/*NTerminalDisplay::NTerminalDisplay()
+	: NTObject(parent, name),
+	running(false),
 	needs_redraw(false), 
 	term_width(0), 
 	term_height(0), 
@@ -24,12 +45,13 @@ NTerminalDisplay::NTerminalDisplay() :
 	
 	// Запуск потока обработки
 	start();
-}
+}*/
 
 NTerminalDisplay::~NTerminalDisplay() {
 	stop();
 }
 
+/*
 // Добавить изображение для отображения
 void NTerminalDisplay::addImage(const std::vector<std::string>& image, 
 											int x, int y, 
@@ -45,7 +67,23 @@ void NTerminalDisplay::addImage(const std::vector<std::string>& image,
 	images.push_back(info);
 	needs_redraw = true;
 }
+*/
 
+// Добавить изображение для отображения
+void NTerminalDisplay::addImage(const std::vector<std::string>& image,
+								int x, int y,
+								ColorPair color,
+								ImageSize size) {
+	std::lock_guard<std::mutex> lock(images_mutex);
+
+	//NTImage img(this, "img", image, x, y, color, size);
+	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color, size);
+
+	images.push_back(img);
+	needs_redraw = true;
+}
+
+/*
 // Добавить изображение произвольного размера
 void NTerminalDisplay::addImageArbitrarySize(const std::vector<std::string>& image, 
 												int x, int y, ColorPair color) {
@@ -57,6 +95,19 @@ void NTerminalDisplay::addImageArbitrarySize(const std::vector<std::string>& ima
 	info.color = color;
 	info.size = SIZE_16x16; // Placeholder, ignored in drawing
 	images.push_back(info);
+	needs_redraw = true;
+}
+*/
+
+// Добавить изображение произвольного размера
+void NTerminalDisplay::addImageArbitrarySize(const std::vector<std::string>& image,
+												int x, int y, ColorPair color) {
+	std::lock_guard<std::mutex> lock(images_mutex);
+
+	//NTImage img(this, "img", image, x, y, color, SIZE_16x16);
+	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color, SIZE_16x16);
+
+	images.push_back(img);
 	needs_redraw = true;
 }
 
@@ -209,6 +260,7 @@ void NTerminalDisplay::worker() {
         endwin();
 }
 
+/*
 //
 void NTerminalDisplay::drawImages() {
         std::lock_guard<std::mutex> lock(images_mutex);
@@ -239,6 +291,27 @@ void NTerminalDisplay::drawImages() {
         }
         
         refresh();
+}
+*/
+
+void NTerminalDisplay::drawImages() {
+	for (const auto& img : images) {
+		attron(COLOR_PAIR(img.color()));
+
+		for (size_t y = 0; y < img.image().size() && (img.y() + static_cast<int>(y)) < term_height; y++) {
+			if (img.y() + static_cast<int>(y) < 0) continue;
+
+			const std::string& line = img.image()[y];
+			for (size_t x = 0; x < line.size() && (img.x() + static_cast<int>(x)) < term_width; x++) {
+				if (img.x() + static_cast<int>(x) < 0) continue;
+				mvaddch(img.y() + static_cast<int>(y), img.x() + static_cast<int>(x), line[x]);
+			}
+		}
+
+		attroff(COLOR_PAIR(img.color()));
+	}
+
+	refresh();
 }
 
 // Обработчик сигнала изменения размера терминала
