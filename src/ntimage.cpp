@@ -1,247 +1,327 @@
-#include <vector>
-#include <string>
-#include <mutex>
-#include <atomic>
-#include <thread>
-#include <condition_variable>
-#include <ncurses.h>
-#include <unistd.h>
-#include <signal.h>
+// NTImage.cpp
 
-#include "digits_8x8.h"
-#include "ntdisplay.h"
+#include <fstream>
+#include <stdexcept>
+#include <algorithm>
 
-NTerminalDisplay::NTerminalDisplay() : 
-	running(false), 
-	needs_redraw(false), 
-	term_width(0), 
-	term_height(0), 
-	bg_color(COLOR_BLACK), 
-	supports_rgb(false) {
-        
-	// Инициализация ncurses и проверка поддержки RGB
-	initNcurses();
-	
-	// Запуск потока обработки
-	start();
+#include "ntimage.h"
+
+// Простой конструктор
+NTImage::NTImage(NTObject* parent, const std::string& name)
+	: NTObject(parent, name), _x(0), _y(0), _color(DEFAULT), _size(SIZE_8x8) {}
+/*
+NTImage::NTImage(NTObject *parent, const std::string &name)
+	: NTObject(parent, name),
+	  _width(0),
+	  _height(0),
+	  _channels(0),
+	  _x(0),
+	  _y(0),
+	  _color(DEFAULT),
+	  _size(SIZE_8x8)
+{
+}*/
+
+NTImage::NTImage(NTObject* parent, const std::string& name,
+			   const std::vector<std::string>& image,
+			   int x, int y, ColorPair color, ImageSize size)
+	: NTObject(parent, name), _image(image), _x(x), _y(y), _color(color), _size(size) {}
+
+NTImage::~NTImage() = default;
+
+/*
+// Полный конструктор
+NTImage::NTImage(NTObject* parent, const std::string& name,
+			   const std::vector<std::string>& image,
+			   int x, int y, ColorPair color, ImageSize size)
+	: NTObject(parent, name), _image(image), _x(x), _y(y), _color(color), _size(size) {updateImageFromLines();}
+	*/
+/*
+NTImage::NTImage(NTObject *parent,
+				 const std::string &name,
+				 const std::vector<std::string>& image,
+				 int x,
+				 int y,
+				 ColorPair color,
+				 ImageSize size)
+	: NTObject(parent, name),
+	  _imageLines(image),
+	  _x(x),
+	  _y(y),
+	  _color(color),
+	  _size(size)
+{
+	updateImageFromLines();
+}
+*/
+/*
+NTImage::NTImage(const NTImage& other)
+{
+	copyFrom(other);
+}
+*/
+/*
+NTImage::~NTImage()
+{
+	clearImage();
+}
+*/
+
+
+
+
+
+/*
+// Конструктор копирования
+NTImage::NTImage(const NTImage& other)
+	: NTObject(other.parent(), other.name()),
+	  _image(other._image),
+	  _x(other._x),
+	  _y(other._y),
+	  _color(other._color),
+	  _size(other._size) {}
+
+	  */
+/*
+// Деструктор
+NTImage::~NTImage() = default;
+*/
+
+NTImage::NTImage(const NTImage& other)
+	: NTObject(other.parent(), other.name()),
+	  _image(other._image),
+	  _x(other._x),
+	  _y(other._y),
+	  _color(other._color),
+	  _size(other._size) {
 }
 
-NTerminalDisplay::~NTerminalDisplay() {
-	stop();
+
+/*
+NTImage& NTImage::operator=(const NTImage& other)
+{
+	if (this != &other) {
+		clearImage();
+		copyFrom(other);
+	}
+	return *this;
+}
+*/
+NTImage& NTImage::operator=(const NTImage& other) {
+	if (this != &other) {
+		NTObject::operator=(other);
+		_image = other._image;
+		_x = other._x;
+		_y = other._y;
+		_color = other._color;
+		_size = other._size;
+	}
+	return *this;
 }
 
-// Добавить изображение для отображения
-void NTerminalDisplay::addImage(const std::vector<std::string>& image, 
-											int x, int y, 
-											ColorPair color, 
-											ImageSize size) {
-	std::lock_guard<std::mutex> lock(images_mutex);
-	ImageInfo info;
-	info.image = image;
-	info.x = x;
-	info.y = y;
-	info.color = color;
-	info.size = size;
-	images.push_back(info);
-	needs_redraw = true;
-}
+bool NTImage::loadFromFile(const std::string &filename)
+{
+	std::ifstream file(filename);
+	if (!file.is_open()) {
+		return false;
+	}
 
-// Добавить изображение произвольного размера
-void NTerminalDisplay::addImageArbitrarySize(const std::vector<std::string>& image, 
-												int x, int y, ColorPair color) {
-	std::lock_guard<std::mutex> lock(images_mutex);
-	ImageInfo info;
-	info.image = image;
-	info.x = x;
-	info.y = y;
-	info.color = color;
-	info.size = SIZE_16x16; // Placeholder, ignored in drawing
-	images.push_back(info);
-	needs_redraw = true;
-}
+	_imageLines.clear();
+	std::string line;
+	while (std::getline(file, line)) {
+		_imageLines.push_back(line);
+	}
 
-// Очистить все изображения
-void NTerminalDisplay::clearImages() {
-	std::lock_guard<std::mutex> lock(images_mutex);
-	images.clear();
-	needs_redraw = true;
-}
-
-// Установить пользовательские цвета (текст/фон) в стандартной палитре
-void NTerminalDisplay::setCustomColor(short text_color, short bg_color) {
-	std::lock_guard<std::mutex> lock(colors_mutex);
-	init_pair(CUSTOM, text_color, bg_color);
-}
-
-// Установить RGB-цвет текста и фона (если поддерживается)
-bool NTerminalDisplay::setRgbColor(short r_text, short g_text, short b_text,
-                     short r_bg, short g_bg, short b_bg) {
-	if (!supports_rgb) return false;
-	
-	std::lock_guard<std::mutex> lock(colors_mutex);
-	
-	// Создаем новый цвет в палитре
-	init_color(100, r_text * 1000 / 255, g_text * 1000 / 255, b_text * 1000 / 255);
-	init_color(101, r_bg * 1000 / 255, g_bg * 1000 / 255, b_bg * 1000 / 255);
-	
-	// Связываем цветовую пару
-	init_pair(CUSTOM, 100, 101);
-	
+	updateImageFromLines();
 	return true;
 }
 
-// Залить весь терминал цветом фона (стандартные цвета)
-void NTerminalDisplay::fillBackground(short bg_color) {
-	std::lock_guard<std::mutex> lock(colors_mutex);
-	this->bg_color = bg_color;
-	bkgd(COLOR_PAIR(DEFAULT) | ' ');
-	init_pair(DEFAULT, COLOR_WHITE, bg_color);
-	needs_redraw = true;
-}
+bool NTImage::saveToFile(const std::string &filename) const
+{
+	std::ofstream file(filename);
+	if (!file.is_open()) {
+		return false;
+	}
 
-// Залить весь терминал RGB-цветом фона (если поддерживается)
-bool NTerminalDisplay::fillBackgroundRgb(short r, short g, short b) {
-	if (!supports_rgb) return false;
-	
-	std::lock_guard<std::mutex> lock(colors_mutex);
-	
-	// Создаем новый цвет фона
-	init_color(102, r * 1000 / 255, g * 1000 / 255, b * 1000 / 255);
+	for (const auto& line : _imageLines) {
+		file << line << '\n';
+	}
 
-	// Обновляем пару DEFAULT
-	init_pair(DEFAULT, COLOR_WHITE, 102);
-	bkgd(COLOR_PAIR(DEFAULT) | ' ');
-	
-	needs_redraw = true;
 	return true;
 }
 
-// Проверить, поддерживается ли RGB
-bool NTerminalDisplay::isRgbSupported() const {
-	return supports_rgb;
+unsigned int NTImage::width() const
+{
+	return _width;
 }
 
-//
-void NTerminalDisplay::initNcurses() {
-	initscr();
-	cbreak();
-	noecho();
-	keypad(stdscr, TRUE);
-	curs_set(0);
-	timeout(0);
-	
-	// Проверка поддержки цветов
-	if (!has_colors()) {
-		endwin();
-		fprintf(stderr, "Терминал не поддерживает цвета\n");
+unsigned int NTImage::height() const
+{
+	return _height;
+}
+
+unsigned int NTImage::channels() const
+{
+	return _channels;
+}
+
+/*const std::vector<unsigned char>& NTImage::imageData() const
+{
+	return _imageData;
+}*/
+
+const std::vector<std::string>& NTImage::image() const
+{
+	return _image;
+}
+
+const std::vector<std::string>& NTImage::getImageLines() const
+{
+	return _imageLines;
+}
+/*
+void NTImage::convertToGrayscale()
+{
+	if (_channels < 3) return;
+
+	for (size_t i = 0; i < _image.size(); i += _channels) {
+		unsigned char gray = static_cast<unsigned char>(
+			0.299 * _image[i] +
+			0.587 * _image[i+1] +
+			0.114 * _image[i+2]);
+
+		_image[i] = gray;
+		_image[i+1] = gray;
+		_image[i+2] = gray;
+	}
+}
+*/
+
+void NTImage::convertToGrayscale() {
+	// Удалите эту реализацию или перепишите для работы со строками
+	// Текущая реализация не имеет смысла для vector<string>
+}
+
+void NTImage::resize(unsigned int newWidth, unsigned int newHeight)
+{
+	// Простейшая реализация ресайза - просто изменить размеры
+	// В реальной реализации нужно было бы делать интерполяцию пикселей
+	_width = newWidth;
+	_height = newHeight;
+
+	// Обновляем данные изображения
+	updateImageFromLines();
+}
+
+void NTImage::setColorPair(ColorPair pair)
+{
+	_color = pair;
+}
+
+void NTImage::setImageSize(ImageSize size)
+{
+	_size = size;
+}
+
+void NTImage::setPosition(int x, int y)
+{
+	_x = x;
+	_y = y;
+}
+
+void NTImage::copyFrom(const NTImage& other)
+{
+	_image = other._image;
+	_imageLines = other._imageLines;
+	_width = other._width;
+	_height = other._height;
+	_channels = other._channels;
+	_x = other._x;
+	_y = other._y;
+	_color = other._color;
+	_size = other._size;
+}
+
+void NTImage::clearImage()
+{
+	_image.clear();
+	_imageLines.clear();
+	_width = 0;
+	_height = 0;
+	_channels = 0;
+}
+
+/*
+void NTImage::updateImageFromLines()
+{
+	if (_imageLines.empty()) {
+		clearImage();
 		return;
 	}
 
-	start_color();
-	use_default_colors();
+	_height = _imageLines.size();
+	_width = 0;
 
-	// Проверка поддержки RGB (256 или truecolor)
-	supports_rgb = (can_change_color() && COLORS >= 256);
-	
-	// Инициализация стандартных цветов
-	init_pair(DEFAULT, COLOR_WHITE, bg_color);
-	init_pair(RED_TEXT, COLOR_RED, bg_color);
-	init_pair(GREEN_TEXT, COLOR_GREEN, bg_color);
-	init_pair(BLUE_TEXT, COLOR_BLUE, bg_color);
-	init_pair(YELLOW_TEXT, COLOR_YELLOW, bg_color);
-	init_pair(CYAN_TEXT, COLOR_CYAN, bg_color);
-	init_pair(MAGENTA_TEXT, COLOR_MAGENTA, bg_color);
-	init_pair(WHITE_TEXT, COLOR_WHITE, bg_color);
-	init_pair(CUSTOM, COLOR_WHITE, bg_color);
-}
-
-// Очистка ресурсов ncurses
-void NTerminalDisplay::cleanupNcurses(){
-	endwin();
-}
-
-//
-void NTerminalDisplay::start() {
-	running = true;
-	worker_thread = std::thread(&NTerminalDisplay::worker, this);
-}
-
-//
-void NTerminalDisplay::stop() {
-	running = false;
-	cv.notify_all();
-	if (worker_thread.joinable()) {
-		worker_thread.join();
+	// Находим максимальную ширину
+	for (const auto& line : _imageLines) {
+		if (line.length() > _width) {
+			_width = line.length();
+		}
 	}
-	endwin();
+
+	// Предполагаем 3 канала (RGB)
+	_channels = 3;
+	_image.resize(_width * _height * _channels, 0);
+
+	// Заполняем данные изображения
+	// (здесь упрощенная реализация - в реальности нужно учитывать цветовые пары)
+	for (size_t y = 0; y < _height; ++y) {
+		const std::string& line = _imageLines[y];
+		for (size_t x = 0; x < line.length(); ++x) {
+			size_t index = (y * _width + x) * _channels;
+			char c = line[x];
+			// Простое заполнение - все символы как белые
+			_image[index] = 255;     // R
+			_image[index+1] = 255;  // G
+			_image[index+2] = 255;   // B
+		}
+	}
+}
+*/
+void NTImage::updateImageFromLines() {
+	// Реализуйте логику для работы со строками
 }
 
-//
-void NTerminalDisplay::worker() {
-        signal(SIGWINCH, [](int) {});
+/*
+void NTImage::updateLinesFromImage()
+{
+	_imageLines.clear();
+	if (_imageempty()) return;
 
-        getmaxyx(stdscr, term_height, term_width);
-
-        while (running) {
-            // Проверка изменения размера терминала
-            int new_width, new_height;
-            getmaxyx(stdscr, new_height, new_width);
-            
-            if (new_width != term_width || new_height != term_height) {
-                term_width = new_width;
-                term_height = new_height;
-                clear();
-                refresh();
-                needs_redraw = true;
-            }
-
-            // Отрисовка изображений
-            if (needs_redraw) {
-                drawImages();
-                needs_redraw = false;
-            }
-
-            // Ожидание событий
-            std::unique_lock<std::mutex> lock(images_mutex);
-            cv.wait_for(lock, std::chrono::milliseconds(100));
-        }
-
-        endwin();
+	for (size_t y = 0; y < _height; ++y) {
+		std::string line;
+		for (size_t x = 0; x < _width; ++x) {
+			size_t index = (y * _width + x) * _channels;
+			// Простое преобразование - если пиксель не черный, ставим символ
+			if (_image[index] > 0 || _image[index+1] > 0 || _image[index+2] > 0) {
+				line += '#';
+			} else {
+				line += ' ';
+			}
+		}
+		_imageLines.push_back(line);
+	}
 }
+*/
+void NTImage::updateLinesFromImage() {
+	// Упрощенная реализация
+	if (_image.empty()) return;
 
-//
-void NTerminalDisplay::drawImages() {
-        std::lock_guard<std::mutex> lock(images_mutex);
-        
-        clear();
-        
-        // Установка фона
-        bkgd(COLOR_PAIR(DEFAULT) | ' ');
-        
-        for (const auto& img : images) {
-            // Установка цвета
-            attron(COLOR_PAIR(img.color));
-            
-            // Отрисовка изображения (теперь без ограничений по размеру)
-            for (size_t y = 0; y < img.image.size() && (img.y + static_cast<int>(y)) < term_height; y++) {
-                if (img.y + static_cast<int>(y) < 0) continue;
-                
-                const std::string& line = img.image[y];
-                for (size_t x = 0; x < line.size() && (img.x + static_cast<int>(x)) < term_width; x++) {
-                    if (img.x + static_cast<int>(x) < 0) continue;
-                    
-                    mvaddch(img.y + static_cast<int>(y), img.x + static_cast<int>(x), line[x]);
-                }
-            }
-            
-            // Сброс цвета
-            attroff(COLOR_PAIR(img.color));
-        }
-        
-        refresh();
+	for (auto& line : _image) {
+		for (size_t x = 0; x < line.size(); x++) {
+			if (line[x] != ' ') {  // Просто проверяем, не пробел ли
+				// Какая-то логика обработки
+			}
+		}
+	}
 }
-
-// Обработчик сигнала изменения размера терминала
-void NTerminalDisplay::handleResize(int sig){
-}
-//};

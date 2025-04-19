@@ -9,7 +9,6 @@
 class NTObject {
 public:
     // Constructor and destructor
-    //NTObject();
     NTObject(NTObject *parent = nullptr, const std::string &name = "");
     ~NTObject();
 
