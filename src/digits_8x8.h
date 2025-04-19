@@ -15,7 +15,7 @@ const std::vector<std::string> custom_image = {
 	" \\____/ "
 };
 
-// Цифра "0"
+// Digit "0"
 const std::vector<std::string> digit_0 = {
     "  XXXX  ",
     " X    X ",
@@ -27,7 +27,7 @@ const std::vector<std::string> digit_0 = {
     "  XXXX  "
 };
 
-// Цифра "1"
+// Digit "1"
 const std::vector<std::string> digit_1 = {
     "    X   ",
     "   XX   ",
@@ -39,7 +39,7 @@ const std::vector<std::string> digit_1 = {
     "   XXX  "
 };
 
-// Цифра "2"
+// Digit "2"
 const std::vector<std::string> digit_2 = {
     "  XXXX  ",
     " X    X ",
@@ -51,7 +51,7 @@ const std::vector<std::string> digit_2 = {
     " XXXXXX "
 };
 
-// Цифра "3"
+// Digit "3"
 const std::vector<std::string> digit_3 = {
     "  XXXX  ",
     " X    X ",
@@ -63,7 +63,7 @@ const std::vector<std::string> digit_3 = {
     "  XXXX  "
 };
 
-// Цифра "4"
+// Digit "4"
 const std::vector<std::string> digit_4 = {
     " X    X ",
     " X    X ",
@@ -75,7 +75,7 @@ const std::vector<std::string> digit_4 = {
     "      X "
 };
 
-// Цифра "5"
+// Digit "5"
 const std::vector<std::string> digit_5 = {
     " XXXXXX ",
     " X      ",
@@ -87,7 +87,7 @@ const std::vector<std::string> digit_5 = {
     "  XXXX  "
 };
 
-// Цифра "6"
+// Digit "6"
 const std::vector<std::string> digit_6 = {
     "  XXXX  ",
     " X    X ",
@@ -99,7 +99,7 @@ const std::vector<std::string> digit_6 = {
     "  XXXX  "
 };
 
-// Цифра "7"
+// Digit "7"
 const std::vector<std::string> digit_7 = {
     "  XXXXX ",
     "      X ",
@@ -111,7 +111,7 @@ const std::vector<std::string> digit_7 = {
     "    X   "
 };
 
-// Цифра "8"
+// Digit "8"
 const std::vector<std::string> digit_8 = {
     "  XXXX  ",
     " X    X ",
@@ -123,7 +123,7 @@ const std::vector<std::string> digit_8 = {
     "  XXXX  "
 };
 
-// Цифра "9"
+// Digit "9"
 const std::vector<std::string> digit_9 = {
     "  XXXX  ",
     " X    X ",

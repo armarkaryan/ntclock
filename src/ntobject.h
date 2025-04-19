@@ -1,33 +1,59 @@
+/*!	\file		ntobject.h
+ *	\brief		Base class module for NT (header file).
+ *	\details	Contains the NTObject class definitions.
+ *	\author		Arthur Markaryan
+ *	\date		18.04.2025
+ *	\copyright	Arthur Markaryan
+ */
+
 #ifndef NTOBJECT_H
 #define NTOBJECT_H
 
-// Include standard vector and string libraries
+/*!	\brief	Standard vector library */
 #include <vector>
+/*!	\brief	Standard string library */
 #include <string>
 
-// Base class definition for NTObject (likely "NT" stands for something specific to the project)
+/*!	\class      NTObject
+ *	\brief      Base class for NT objects.
+ *	\details	Represents the core functionality for objects in the NT system.
+ */
 class NTObject {
 public:
-    // Constructor and destructor
+    /*!	\brief		Constructor
+     *	\param		parent	Pointer to the parent object (default: nullptr)
+     *	\param		name	Object name (default: empty string)
+     */
     NTObject(NTObject *parent = nullptr, const std::string &name = "");
+
+    /*!	\brief	Destructor */
     ~NTObject();
 
-    // Sets the parent object
+    /*!	\brief		Sets the parent object
+     *	\details	Updates the parent-child relationship.
+     *	\param		parent	Pointer to the parent object
+     *	\note		Pass nullptr to remove parent relationship
+     */
     void setParent(NTObject *parent);
 
-    // Returns a pointer to the parent object
+    /*!	\brief		Gets the parent object
+     *	\return		Pointer to the parent object or nullptr if none exists
+     */
     NTObject *parent() const;
 
-    // Sets the name of the object
+    /*!	\brief		Sets the object name
+     *	\param		name	New name for the object
+     */
     void setName(const std::string &name);
 
-    // Returns a pointer to the object's name
+    /*!	\brief		Gets the object name
+     *	\return		Current name of the object
+     */
     std::string name() const;
 
 private:
-    NTObject *_parent;
-    std::string _name;
+    NTObject *_parent;	/*!< Pointer to parent object */
+    std::string _name;	/*!< Object name */
 };
 
-// End of header guard
 #endif // NTOBJECT_H
