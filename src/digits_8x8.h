@@ -137,7 +137,16 @@ const std::vector<std::string> digit_8x8_9 = {
 
 //
 const std::vector<std::string> digits_8x8[] = {
-    digit_8x8_0, digit_8x8_1, digit_8x8_2, digit_8x8_3, digit_8x8_4, digit_8x8_5, digit_8x8_6, digit_8x8_7, digit_8x8_8, digit_8x8_9
+    digit_8x8_0,
+    digit_8x8_1,
+    digit_8x8_2,
+    digit_8x8_3,
+    digit_8x8_4,
+    digit_8x8_5,
+    digit_8x8_6,
+    digit_8x8_7,
+    digit_8x8_8,
+    digit_8x8_9
 };
 
 #endif	// DIGITS_8x8_H

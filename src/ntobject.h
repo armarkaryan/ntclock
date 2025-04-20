@@ -20,6 +20,31 @@
  */
 class NTObject {
 public:
+    //
+    // Цветовые пары (текст/фон)
+    enum ColorPair {
+        DEFAULT = 1,
+        RED_TEXT,
+        GREEN_TEXT,
+        BLUE_TEXT,
+        YELLOW_TEXT,
+        CYAN_TEXT,
+        MAGENTA_TEXT,
+        WHITE_TEXT,
+        CUSTOM
+    };
+
+    // Поддерживаемые размеры изображений
+    enum ImageSize {
+        SIZE_4x4,
+        SIZE_8x4,
+        SIZE_4x8,
+        SIZE_8x8,
+        SIZE_8x16,
+        SIZE_16x8,
+        SIZE_16x16
+    };
+
     /*!	\brief		Constructor
      *	\param		parent	Pointer to the parent object (default: nullptr)
      *	\param		name	Object name (default: empty string)

@@ -1,41 +1,39 @@
 // NTImage.cpp
 
-#include <fstream>
-#include <stdexcept>
-#include <algorithm>
-
 #include "ntimage.h"
 
 // Простой конструктор
 NTImage::NTImage(NTObject* parent, const std::string& name)
-	: NTObject(parent, name), _x(0), _y(0), _color(DEFAULT), _size(SIZE_8x8) {}
-/*
-NTImage::NTImage(NTObject *parent, const std::string &name)
-	: NTObject(parent, name),
-	  _width(0),
-	  _height(0),
-	  _channels(0),
-	  _x(0),
-	  _y(0),
-	  _color(DEFAULT),
-	  _size(SIZE_8x8)
+    : NTObject(parent, name), _width(8), _height(8), _channels(0),
+      _x(0), _y(0), _color(DEFAULT), _size(SIZE_8x8)
 {
-}*/
+    // To do... image, width, height, chanals
+}
 
-NTImage::NTImage(NTObject* parent, const std::string& name,
-			   const std::vector<std::string>& image,
-			   int x, int y, ColorPair color, ImageSize size)
-	: NTObject(parent, name), _image(image), _x(x), _y(y), _color(color), _size(size) {}
-
-NTImage::~NTImage() = default;
-
-/*
 // Полный конструктор
 NTImage::NTImage(NTObject* parent, const std::string& name,
-			   const std::vector<std::string>& image,
-			   int x, int y, ColorPair color, ImageSize size)
-	: NTObject(parent, name), _image(image), _x(x), _y(y), _color(color), _size(size) {updateImageFromLines();}
-	*/
+               const std::vector<std::string>& image,
+               int x, int y, ColorPair color, ImageSize size)
+    : NTObject(parent, name), _image(image), _x(x), _y(y), _color(color), _size(size)
+{
+    // To do... image, width, height, chanals
+}
+
+// Конструктор копирования
+NTImage::NTImage(const NTImage& other)
+    : NTObject(other.parent(), other.name()),
+      _image(other._image),
+      _x(other._x),
+      _y(other._y),
+      _color(other._color),
+      _size(other._size)
+{
+    // To do... width, height, chanals
+}
+
+// Деструктор
+NTImage::~NTImage() = default;
+
 /*
 NTImage::NTImage(NTObject *parent,
 				 const std::string &name,
@@ -54,12 +52,14 @@ NTImage::NTImage(NTObject *parent,
 	updateImageFromLines();
 }
 */
+
 /*
 NTImage::NTImage(const NTImage& other)
 {
 	copyFrom(other);
 }
 */
+
 /*
 NTImage::~NTImage()
 {
@@ -67,35 +67,17 @@ NTImage::~NTImage()
 }
 */
 
-
-
-
-
 /*
 // Конструктор копирования
 NTImage::NTImage(const NTImage& other)
-	: NTObject(other.parent(), other.name()),
-	  _image(other._image),
-	  _x(other._x),
-	  _y(other._y),
-	  _color(other._color),
-	  _size(other._size) {}
+    : NTObject(other.parent(), other.name()),
+      _image(other._image),
+      _x(other._x),
+      _y(other._y),
+      _color(other._color),
+      _size(other._size) {}
 
-	  */
-/*
-// Деструктор
-NTImage::~NTImage() = default;
-*/
-
-NTImage::NTImage(const NTImage& other)
-	: NTObject(other.parent(), other.name()),
-	  _image(other._image),
-	  _x(other._x),
-	  _y(other._y),
-	  _color(other._color),
-	  _size(other._size) {
-}
-
+      */
 
 /*
 NTImage& NTImage::operator=(const NTImage& other)
@@ -107,6 +89,8 @@ NTImage& NTImage::operator=(const NTImage& other)
 	return *this;
 }
 */
+
+// Оператор присваивания
 NTImage& NTImage::operator=(const NTImage& other) {
 	if (this != &other) {
 		NTObject::operator=(other);
@@ -117,37 +101,6 @@ NTImage& NTImage::operator=(const NTImage& other) {
 		_size = other._size;
 	}
 	return *this;
-}
-
-bool NTImage::loadFromFile(const std::string &filename)
-{
-	std::ifstream file(filename);
-	if (!file.is_open()) {
-		return false;
-	}
-
-	_imageLines.clear();
-	std::string line;
-	while (std::getline(file, line)) {
-		_imageLines.push_back(line);
-	}
-
-	updateImageFromLines();
-	return true;
-}
-
-bool NTImage::saveToFile(const std::string &filename) const
-{
-	std::ofstream file(filename);
-	if (!file.is_open()) {
-		return false;
-	}
-
-	for (const auto& line : _imageLines) {
-		file << line << '\n';
-	}
-
-	return true;
 }
 
 unsigned int NTImage::width() const
@@ -165,43 +118,25 @@ unsigned int NTImage::channels() const
 	return _channels;
 }
 
-/*const std::vector<unsigned char>& NTImage::imageData() const
+//
+void NTImage::setImage(const std::vector<std::string>& image)
 {
-	return _imageData;
-}*/
+    _image = image;
+}
 
+//
 const std::vector<std::string>& NTImage::image() const
 {
 	return _image;
 }
 
+//
 const std::vector<std::string>& NTImage::getImageLines() const
 {
 	return _imageLines;
 }
-/*
-void NTImage::convertToGrayscale()
-{
-	if (_channels < 3) return;
 
-	for (size_t i = 0; i < _image.size(); i += _channels) {
-		unsigned char gray = static_cast<unsigned char>(
-			0.299 * _image[i] +
-			0.587 * _image[i+1] +
-			0.114 * _image[i+2]);
-
-		_image[i] = gray;
-		_image[i+1] = gray;
-		_image[i+2] = gray;
-	}
-}
-*/
-
-void NTImage::convertToGrayscale() {
-	// Удалите эту реализацию или перепишите для работы со строками
-	// Текущая реализация не имеет смысла для vector<string>
-}
-
+//
 void NTImage::resize(unsigned int newWidth, unsigned int newHeight)
 {
 	// Простейшая реализация ресайза - просто изменить размеры
@@ -213,20 +148,14 @@ void NTImage::resize(unsigned int newWidth, unsigned int newHeight)
 	updateImageFromLines();
 }
 
-void NTImage::setColorPair(ColorPair pair)
+void NTImage::setColorPair(NTObject::ColorPair pair)
 {
 	_color = pair;
 }
 
-void NTImage::setImageSize(ImageSize size)
+void NTImage::setImageSize(NTObject::ImageSize size)
 {
 	_size = size;
-}
-
-void NTImage::setPosition(int x, int y)
-{
-	_x = x;
-	_y = y;
 }
 
 void NTImage::copyFrom(const NTImage& other)

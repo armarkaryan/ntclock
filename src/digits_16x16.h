@@ -13,14 +13,14 @@ const std::vector<std::string> digit_16x16_0 = {
     "   X     X  X   ",
     "   X    X   X   ",
     "   X    X    X  ",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
+    "  X    X     X  ",
+    "  X    X     X  ",
+    "  X    X     X  ",
+    "   X  X      X  ",
+    "    X X     X   ",
+    "     XXXXXXX    ",
+    "                ",
+    "                "
 };
 
 // Digit "1"
