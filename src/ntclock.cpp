@@ -65,8 +65,8 @@ int main(int argc, char*argv[]) {
 */
     NTDisplay display;
 
-	//NTImage nti_hh_hi(display, "Hour_hi");
-	//NTImage nti_hh_lo(display, "Hour_lo");
+    NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8], 25, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
+    NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9], 24, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
 
     if (display.isRgbSupported()) {
         // Заливаем терминал градиентным синим фоном
@@ -85,7 +85,11 @@ int main(int argc, char*argv[]) {
         display.addImageArbitrarySize(custom_image, 5, 5, NTObject::GREEN_TEXT);
         display.addImageArbitrarySize(digits_8x8[1], 20, 5, NTObject::CUSTOM);
 
-        display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTObject::RED_TEXT);
+        //display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTObject::RED_TEXT);
+        nti_hh_hi.setParent(&display); // For test
+        nti_hh_hi.setx(16);
+        display.addImageArbitrarySize(nti_hh_hi.image(), nti_hh_hi.x(), nti_hh_hi.y(), nti_hh_hi.colorPair());
+        display.addImageArbitrarySize(nti_hh_lo.image(), nti_hh_lo.x(), nti_hh_lo.y(), nti_hh_lo.colorPair());
         sleep(3);
     } else {
         // Если RGB не поддерживается, используем стандартные цвета

@@ -131,9 +131,18 @@ const std::vector<std::string> digit_16x16_9 = {
     "  XXXX  "
 };
 
-//
+// Array of digits image from 0 to 9
 const std::vector<std::string> digits_16x16[] = {
-    digit_16x16_0, digit_16x16_1, digit_16x16_2, digit_16x16_3, digit_16x16_4, digit_16x16_5, digit_16x16_6, digit_16x16_7, digit_16x16_8, digit_16x16_9
+    digit_16x16_0,
+    digit_16x16_1,
+    digit_16x16_2,
+    digit_16x16_3,
+    digit_16x16_4,
+    digit_16x16_5,
+    digit_16x16_6,
+    digit_16x16_7,
+    digit_16x16_8,
+    digit_16x16_9
 };
 
 #endif // DIGITS_16X16_H

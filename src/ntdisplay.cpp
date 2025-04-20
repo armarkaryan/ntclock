@@ -211,7 +211,7 @@ void NTDisplay::drawImages() {
         
         for (const auto& img : images) {
             // Установка цвета
-            attron(COLOR_PAIR(img.color));
+            attron(COLOR_PAIR(img.colorPair));
             
             // Отрисовка изображения (теперь без ограничений по размеру)
             for (size_t y = 0; y < img.image.size() && (img.y + static_cast<int>(y)) < term_height; y++) {
@@ -226,7 +226,7 @@ void NTDisplay::drawImages() {
             }
             
             // Сброс цвета
-            attroff(COLOR_PAIR(img.color));
+            attroff(COLOR_PAIR(img.colorPair));
         }
         
         refresh();
@@ -235,7 +235,7 @@ void NTDisplay::drawImages() {
 
 void NTDisplay::drawImages() {
 	for (const auto& img : images) {
-		attron(COLOR_PAIR(img.color()));
+        attron(COLOR_PAIR(img.colorPair()));
 
 		for (size_t y = 0; y < img.image().size() && (img.y() + static_cast<int>(y)) < term_height; y++) {
 			if (img.y() + static_cast<int>(y) < 0) continue;
@@ -247,7 +247,7 @@ void NTDisplay::drawImages() {
 			}
 		}
 
-		attroff(COLOR_PAIR(img.color()));
+        attroff(COLOR_PAIR(img.colorPair()));
 	}
 
 	refresh();

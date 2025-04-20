@@ -9,7 +9,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "nttypes.h"
 #include "ntobject.h"
 
 class NTImage : public NTObject
@@ -17,9 +16,9 @@ class NTImage : public NTObject
 public:
 	// ctor/dtor
 	NTImage(NTObject *parent = nullptr, const std::string &name = "");
-	NTImage(NTObject* parent, const std::string& name,
+    NTImage(NTObject *parent, const std::string& name,
 			   const std::vector<std::string>& image,
-               int x, int y, NTObject::ColorPair color, NTObject::ImageSize size);
+               int x, int y, ColorPair colorPair, ImageSize size);
 	~NTImage();
 
 	// Конструктор копирования
@@ -36,7 +35,7 @@ public:
 	int y() const { return _y; }
 
     //
-    NTObject::ColorPair color() const { return _color; }
+    ColorPair colorPair() const { return _colorPair; }
 
 	//
     void setImage(const std::vector<std::string>& image);
@@ -45,27 +44,22 @@ public:
 	unsigned int width() const;
 	unsigned int height() const;
 	unsigned int channels() const;
-	const std::vector<std::string>& getImageLines() const;
 
-	void resize(unsigned int newWidth, unsigned int newHeight);
-    void setColorPair(NTObject::ColorPair pair);
-    void setImageSize(NTObject::ImageSize size);
+    void setColorPair(ColorPair colorPair);
+    void setImageSize(ImageSize size);
 
 private:
     std::vector<std::string> _image;
-	std::vector<std::string> _imageLines;
 	unsigned int _width;
 	unsigned int _height;
 	unsigned int _channels;
 	int _x;
 	int _y;
-    NTObject::ColorPair _color;
-    NTObject::ImageSize _size;
+    ColorPair _colorPair;
+    ImageSize _size;
 
 	void copyFrom(const NTImage& other);
 	void clearImage();
-	void updateImageFromLines();
-	void updateLinesFromImage();
 };
 
 #endif // NTIMAGE_H
