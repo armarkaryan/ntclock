@@ -62,7 +62,7 @@ int main(int argc, char*argv[]) {
     std::cout << "no2.parent().name(): " << no2.parent()->name() << std::endl;
     sleep(5);
 */
-    NTerminalDisplay display;
+    NTDisplay display;
 
 	//NTImage nti_hh_hi(display, "Hour_hi");
 	//NTImage nti_hh_lo(display, "Hour_lo");
@@ -75,10 +75,10 @@ int main(int argc, char*argv[]) {
         display.setRgbColor(255, 165, 0,   // Оранжевый (R=255, G=165, B=0)
                             0, 0, 0);       // Чёрный фон (но он прозрачен из-за bkgd)
 /*
-		display.addImage(digits_8x8[0], 10, 5, NTerminalDisplay::CUSTOM);
-		display.addImage(digits_8x8[1], 20, 5, NTerminalDisplay::CUSTOM);
-        display.addImageArbitrarySize(custom_image, 5, 5, NTerminalDisplay::GREEN_TEXT);
-		display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTerminalDisplay::CUSTOM);
+        display.addImage(digits_8x8[0], 10, 5, NTDisplay::CUSTOM);
+        display.addImage(digits_8x8[1], 20, 5, NTDisplay::CUSTOM);
+        display.addImageArbitrarySize(custom_image, 5, 5, NTDisplay::GREEN_TEXT);
+        display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTDisplay::CUSTOM);
 */
 		display.addImageArbitrarySize(digits_8x8[0], 10, 5, CUSTOM);
 		display.addImageArbitrarySize(custom_image, 5, 5, GREEN_TEXT);
@@ -89,8 +89,8 @@ int main(int argc, char*argv[]) {
     } else {
         // Если RGB не поддерживается, используем стандартные цвета
         display.fillBackground(COLOR_BLUE);
-		//display.addImage(digit_0, 10, 5, NTerminalDisplay::YELLOW_TEXT);
-		display.addImageArbitrarySize(digit_0, 10, 5, YELLOW_TEXT);
+        //display.addImage(digit_0, 10, 5, NTDisplay::YELLOW_TEXT);
+        display.addImageArbitrarySize(digits_8x8[0], 10, 5, YELLOW_TEXT);
         sleep(3);
     }
     return 0;

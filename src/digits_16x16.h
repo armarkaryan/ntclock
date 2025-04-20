@@ -1,34 +1,30 @@
-#ifndef DIGITS_8x8_H
-#define DIGITS_8x8_H
-
+#ifndef DIGITS_16X16_H
+#define DIGITS_16X16_H
 #include <vector>
 #include <string>
 
-const std::vector<std::string> custom_image = {
-	"This is a custom",
-	"size image that",
-	"can be any height",
-	"and width you want",
-	"  ____  ",
-	" /    \\ ",
-	"|      |",
-	" \\____/ "
-};
-
 // Digit "0"
-const std::vector<std::string> digit_8x8_0 = {
-    "  XXXX  ",
-    " X    X ",
-    " X  X X ",
-    " X  X X ",
-    " X X  X ",
-    " X X  X ",
-    " X    X ",
-    "  XXXX  "
+const std::vector<std::string> digit_16x16_0 = {
+    "                ",
+    "     XXXXX      ",
+    "    X     X     ",
+    "   X     X X    ",
+    "   X     X X    ",
+    "   X     X  X   ",
+    "   X    X   X   ",
+    "   X    X    X  ",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
 };
 
 // Digit "1"
-const std::vector<std::string> digit_8x8_1 = {
+const std::vector<std::string> digit_16x16_1 = {
     "    X   ",
     "   XX   ",
     "  X X   ",
@@ -40,7 +36,7 @@ const std::vector<std::string> digit_8x8_1 = {
 };
 
 // Digit "2"
-const std::vector<std::string> digit_8x8_2 = {
+const std::vector<std::string> digit_16x16_2 = {
     "  XXXX  ",
     " X    X ",
     "      X ",
@@ -52,7 +48,7 @@ const std::vector<std::string> digit_8x8_2 = {
 };
 
 // Digit "3"
-const std::vector<std::string> digit_8x8_3 = {
+const std::vector<std::string> digit_16x16_3 = {
     "  XXXX  ",
     " X    X ",
     "      X ",
@@ -64,7 +60,7 @@ const std::vector<std::string> digit_8x8_3 = {
 };
 
 // Digit "4"
-const std::vector<std::string> digit_8x8_4 = {
+const std::vector<std::string> digit_16x16_4 = {
     " X    X ",
     " X    X ",
     " X    X ",
@@ -76,7 +72,7 @@ const std::vector<std::string> digit_8x8_4 = {
 };
 
 // Digit "5"
-const std::vector<std::string> digit_8x8_5 = {
+const std::vector<std::string> digit_16x16_5 = {
     " XXXXXX ",
     " X      ",
     " X      ",
@@ -88,7 +84,7 @@ const std::vector<std::string> digit_8x8_5 = {
 };
 
 // Digit "6"
-const std::vector<std::string> digit_8x8_6 = {
+const std::vector<std::string> digit_16x16_6 = {
     "  XXXX  ",
     " X    X ",
     " X      ",
@@ -100,7 +96,7 @@ const std::vector<std::string> digit_8x8_6 = {
 };
 
 // Digit "7"
-const std::vector<std::string> digit_8x8_7 = {
+const std::vector<std::string> digit_16x16_7 = {
     "  XXXXX ",
     "      X ",
     "      X ",
@@ -112,7 +108,7 @@ const std::vector<std::string> digit_8x8_7 = {
 };
 
 // Digit "8"
-const std::vector<std::string> digit_8x8_8 = {
+const std::vector<std::string> digit_16x16_8 = {
     "  XXXX  ",
     " X    X ",
     " X    X ",
@@ -124,7 +120,7 @@ const std::vector<std::string> digit_8x8_8 = {
 };
 
 // Digit "9"
-const std::vector<std::string> digit_8x8_9 = {
+const std::vector<std::string> digit_16x16_9 = {
     "  XXXX  ",
     " X    X ",
     " X    X ",
@@ -136,8 +132,8 @@ const std::vector<std::string> digit_8x8_9 = {
 };
 
 //
-const std::vector<std::string> digits_8x8[] = {
-    digit_8x8_0, digit_8x8_1, digit_8x8_2, digit_8x8_3, digit_8x8_4, digit_8x8_5, digit_8x8_6, digit_8x8_7, digit_8x8_8, digit_8x8_9
+const std::vector<std::string> digits_16x16[] = {
+    digit_16x16_0, digit_16x16_1, digit_16x16_2, digit_16x16_3, digit_16x16_4, digit_16x16_5, digit_16x16_6, digit_16x16_7, digit_16x16_8, digit_16x16_9
 };
 
-#endif	// DIGITS_8x8_H
+#endif // DIGITS_16X16_H

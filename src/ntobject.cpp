@@ -2,6 +2,7 @@
  *	\brief		Implementation of the NTObject class
  *	\author		Arthur Markaryan
  *	\date		18.04.2025
+ *	\copyright	Arthur Markaryan
  */
 
 #include "ntobject.h"
