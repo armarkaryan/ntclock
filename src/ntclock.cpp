@@ -65,10 +65,12 @@ int main(int argc, char*argv[]) {
 */
     NTDisplay display;
 
-    NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8], 25, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
-    NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9], 24, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
+	//NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8], 25, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
+	//NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9], 24, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
+	NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
 
-    if (display.isRgbSupported()) {
+	if (display.isRgbSupported()) {
         // Заливаем терминал градиентным синим фоном
         display.fillBackgroundRgb(30, 30, 100);
 
@@ -81,11 +83,10 @@ int main(int argc, char*argv[]) {
         display.addImageArbitrarySize(custom_image, 5, 5, NTDisplay::GREEN_TEXT);
         display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTDisplay::CUSTOM);
 */
-        display.addImageArbitrarySize(digits_8x8[0], 10, 5, NTObject::CUSTOM);
-        display.addImageArbitrarySize(custom_image, 5, 5, NTObject::GREEN_TEXT);
-        display.addImageArbitrarySize(digits_8x8[1], 20, 5, NTObject::CUSTOM);
+		display.addImageArbitrarySize(digits_8x8[0].img, 10, 5, nt::ColorPair::CUSTOM);
+		display.addImageArbitrarySize(custom_images[0].img, 5, 5, nt::ColorPair::GREEN_TEXT);
+		display.addImageArbitrarySize(digits_8x8[1].img, 20, 5, nt::ColorPair::CUSTOM);
 
-        //display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTObject::RED_TEXT);
         nti_hh_hi.setParent(&display); // For test
         nti_hh_hi.setx(16);
         display.addImageArbitrarySize(nti_hh_hi.image(), nti_hh_hi.x(), nti_hh_hi.y(), nti_hh_hi.colorPair());
@@ -93,9 +94,8 @@ int main(int argc, char*argv[]) {
         sleep(3);
     } else {
         // Если RGB не поддерживается, используем стандартные цвета
-        display.fillBackground(COLOR_BLUE);
-        //display.addImage(digit_0, 10, 5, NTDisplay::YELLOW_TEXT);
-        display.addImageArbitrarySize(digits_8x8[0], 10, 5, NTObject::YELLOW_TEXT);
+		display.fillBackground(COLOR_BLUE);
+		display.addImageArbitrarySize(digits_8x8[0].img, 10, 5, nt::ColorPair::YELLOW_TEXT);
         sleep(3);
     }
     return 0;

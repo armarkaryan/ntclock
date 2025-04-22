@@ -37,8 +37,8 @@ NTDisplay::~NTDisplay() {
 // Добавить изображение для отображения
 void NTDisplay::addImage(const std::vector<std::string>& image,
 								int x, int y,
-								ColorPair color,
-								ImageSize size) {
+								nt::ColorPair color,
+								nt::ImageSize size) {
 	std::lock_guard<std::mutex> lock(images_mutex);
 	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color, size);
 	images.push_back(img);
@@ -47,9 +47,9 @@ void NTDisplay::addImage(const std::vector<std::string>& image,
 
 // Добавить изображение произвольного размера
 void NTDisplay::addImageArbitrarySize(const std::vector<std::string>& image,
-												int x, int y, ColorPair color) {
+												int x, int y, nt::ColorPair color) {
 	std::lock_guard<std::mutex> lock(images_mutex);
-	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color, SIZE_16x16);
+	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color, nt::SIZE_16x16);
 	images.push_back(img);
 	needs_redraw = true;
 }
@@ -64,7 +64,7 @@ void NTDisplay::clearImages() {
 // Установить пользовательские цвета (текст/фон) в стандартной палитре
 void NTDisplay::setCustomColor(short text_color, short bg_color) {
 	std::lock_guard<std::mutex> lock(colors_mutex);
-	init_pair(CUSTOM, text_color, bg_color);
+	init_pair(nt::CUSTOM, text_color, bg_color);
 }
 
 // Установить RGB-цвет текста и фона (если поддерживается)
@@ -77,7 +77,7 @@ bool NTDisplay::setRgbColor(short r_text, short g_text, short b_text,
 	init_color(100, r_text * 1000 / 255, g_text * 1000 / 255, b_text * 1000 / 255);
 	init_color(101, r_bg * 1000 / 255, g_bg * 1000 / 255, b_bg * 1000 / 255);
 	// Связываем цветовую пару
-	init_pair(CUSTOM, 100, 101);
+	init_pair(nt::CUSTOM, 100, 101);
 	
 	return true;
 }
@@ -86,8 +86,8 @@ bool NTDisplay::setRgbColor(short r_text, short g_text, short b_text,
 void NTDisplay::fillBackground(short bg_color) {
 	std::lock_guard<std::mutex> lock(colors_mutex);
 	this->bg_color = bg_color;
-	bkgd(COLOR_PAIR(DEFAULT) | ' ');
-	init_pair(DEFAULT, COLOR_WHITE, bg_color);
+	bkgd(COLOR_PAIR(nt::DEFAULT) | ' ');
+	init_pair(nt::DEFAULT, COLOR_WHITE, bg_color);
 	needs_redraw = true;
 }
 
@@ -99,8 +99,8 @@ bool NTDisplay::fillBackgroundRgb(short r, short g, short b) {
 	// Создаем новый цвет фона
 	init_color(102, r * 1000 / 255, g * 1000 / 255, b * 1000 / 255);
 	// Обновляем пару DEFAULT
-	init_pair(DEFAULT, COLOR_WHITE, 102);
-	bkgd(COLOR_PAIR(DEFAULT) | ' ');
+	init_pair(nt::DEFAULT, COLOR_WHITE, 102);
+	bkgd(COLOR_PAIR(nt::DEFAULT) | ' ');
 	
 	needs_redraw = true;
 	return true;
@@ -134,15 +134,15 @@ void NTDisplay::initNcurses() {
 	supports_rgb = (can_change_color() && COLORS >= 256);
 	
 	// Инициализация стандартных цветов
-	init_pair(DEFAULT, COLOR_WHITE, bg_color);
-	init_pair(RED_TEXT, COLOR_RED, bg_color);
-	init_pair(GREEN_TEXT, COLOR_GREEN, bg_color);
-	init_pair(BLUE_TEXT, COLOR_BLUE, bg_color);
-	init_pair(YELLOW_TEXT, COLOR_YELLOW, bg_color);
-	init_pair(CYAN_TEXT, COLOR_CYAN, bg_color);
-	init_pair(MAGENTA_TEXT, COLOR_MAGENTA, bg_color);
-	init_pair(WHITE_TEXT, COLOR_WHITE, bg_color);
-	init_pair(CUSTOM, COLOR_WHITE, bg_color);
+	init_pair(nt::DEFAULT, COLOR_WHITE, bg_color);
+	init_pair(nt::RED_TEXT, COLOR_RED, bg_color);
+	init_pair(nt::GREEN_TEXT, COLOR_GREEN, bg_color);
+	init_pair(nt::BLUE_TEXT, COLOR_BLUE, bg_color);
+	init_pair(nt::YELLOW_TEXT, COLOR_YELLOW, bg_color);
+	init_pair(nt::CYAN_TEXT, COLOR_CYAN, bg_color);
+	init_pair(nt::MAGENTA_TEXT, COLOR_MAGENTA, bg_color);
+	init_pair(nt::WHITE_TEXT, COLOR_WHITE, bg_color);
+	init_pair(nt::CUSTOM, COLOR_WHITE, bg_color);
 }
 
 // Очистка ресурсов ncurses
