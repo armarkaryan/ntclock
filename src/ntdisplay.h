@@ -12,6 +12,7 @@
 #include <signal.h>
 
 #include "nttypes.h"
+#include "image_custom.h"
 #include "digits_8x8.h"
 #include "digits_16x16.h"
 #include "ntimage.h"
@@ -26,14 +27,14 @@ public:
 	// Добавить изображение для отображения
 	void addImage(const std::vector<std::string>& image, // image - вектор строк, где каждая строка представляет линию изображения
 					int x, int y,	// x, y - позиция верхнего левого угла
-					ColorPair color = DEFAULT, // color - цветовая схема
-					ImageSize size = SIZE_8x8); // size - стандартный размер изображения
+					nt::ColorPair color = nt::DEFAULT, // color - цветовая схема
+					nt::ImageSize size = nt::SIZE_8x8); // size - стандартный размер изображения
 
 	// Добавить изображение произвольного размера
 	// Аналогично addImage, но без ограничений по размеру
     void addImageArbitrarySize(const std::vector<std::string>& image,   // image - вектор строк, где каждая строка представляет линию изображения
                                     int x, int y,   // x, y - позиция верхнего левого угла
-                                    ColorPair color = DEFAULT); // color - цветовая схема
+									nt::ColorPair color = nt::DEFAULT); // color - цветовая схема
 
 	// Очистить все изображения
 	// Удаляет все добавленные изображения
