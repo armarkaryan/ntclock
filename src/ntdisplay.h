@@ -13,40 +13,15 @@
 
 #include "nttypes.h"
 #include "digits_8x8.h"
+#include "digits_16x16.h"
 #include "ntimage.h"
 
-//class NTerminalDisplay {
-class NTerminalDisplay : public NTObject {
+class NTDisplay : public NTObject {
 public:
-/*
-	// Цветовые пары (текст/фон)
-	enum ColorPair {
-		DEFAULT = 1,    // Стандартная цветовая пара (обычно белый на черном)
-		RED_TEXT,       // Красный текст
-		GREEN_TEXT,     // Зеленый текст
-		BLUE_TEXT,      // Синий текст
-		YELLOW_TEXT,    // Желтый текст
-		CYAN_TEXT,      // Бирюзовый текст
-		MAGENTA_TEXT,   // Пурпурный текст
-		WHITE_TEXT,     // Белый текст
-		CUSTOM          // Пользовательские цвета
-	};
-
-	// Поддерживаемые размеры изображений
-	enum ImageSize {
-		SIZE_4x4,      // 4 строки, 4 символа в ширину
-		SIZE_8x4,       // 8 строк, 4 символа
-		SIZE_4x8,       // 4 строки, 8 символов
-		SIZE_8x8,       // 8x8 символов (по умолчанию)
-		SIZE_8x16,      // 8 строк, 16 символов
-		SIZE_16x8,      // 16 строк, 8 символов
-		SIZE_16x16      // 16x16 символов
-	};
-*/
 	// Конструктор/деструктор
-	//NTerminalDisplay();  // Инициализирует библиотеку ncurses
-	NTerminalDisplay(NTObject* parent = nullptr, const std::string& name ="");
-	~NTerminalDisplay(); // Освобождает ресурсы ncurses и останавливает поток
+    // Инициализирует библиотеку ncurses
+    NTDisplay(NTObject* parent = nullptr, const std::string& name ="");
+    ~NTDisplay(); // Освобождает ресурсы ncurses и останавливает поток
 
 	// Добавить изображение для отображения
 	void addImage(const std::vector<std::string>& image, // image - вектор строк, где каждая строка представляет линию изображения
@@ -56,9 +31,9 @@ public:
 
 	// Добавить изображение произвольного размера
 	// Аналогично addImage, но без ограничений по размеру
-	void addImageArbitrarySize(const std::vector<std::string>& image,
-									int x, int y,
-									ColorPair color = DEFAULT);
+    void addImageArbitrarySize(const std::vector<std::string>& image,   // image - вектор строк, где каждая строка представляет линию изображения
+                                    int x, int y,   // x, y - позиция верхнего левого угла
+                                    ColorPair color = DEFAULT); // color - цветовая схема
 
 	// Очистить все изображения
 	// Удаляет все добавленные изображения
@@ -86,18 +61,6 @@ public:
 	bool isRgbSupported() const;  // Проверка поддержки RGB цветов
 
 private:
-	/*
-	// Структура для хранения информации об изображении
-	struct ImageInfo {
-		std::vector<std::string> image;  // Само изображение
-		int x;                          // Позиция X
-		int y;                          // Позиция Y
-		ColorPair color;                // Цветовая схема
-		ImageSize size;                 // Размер изображения
-	};
-
-	std::vector<ImageInfo> images;      // Вектор всех изображений
-	*/
 	std::vector<NTImage> images;      // Вектор всех изображений
 
 	std::mutex images_mutex;           // Мьютекс для доступа к images
