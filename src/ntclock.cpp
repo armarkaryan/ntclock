@@ -54,21 +54,12 @@ void hview(){
 
 
 int main(int argc, char*argv[]) {
-/*
-    NTObject no0(0, "0");
-    std::cout << "no0" << " " << no0.name() << std::endl;
-    NTObject no1(&no0, "1");  // Правильно: указатель + строка
-    std::cout << "no1.parent().name(): " << no1.parent()->name() << std::endl;
-    NTObject no2(&no1, "2");  // Правильно: указатель + строка
-    std::cout << "no2.parent().name(): " << no2.parent()->name() << std::endl;
-    sleep(5);
-*/
+	//
     NTDisplay display;
 
-	//NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8], 25, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
-	//NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9], 24, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
 	NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
 	NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	sleep(3);
 
 	if (display.isRgbSupported()) {
         // Заливаем терминал градиентным синим фоном
@@ -84,12 +75,19 @@ int main(int argc, char*argv[]) {
         display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTDisplay::CUSTOM);
 */
 		display.addImageArbitrarySize(digits_8x8[0].img, 10, 5, nt::ColorPair::CUSTOM);
+		sleep(3);
 		display.addImageArbitrarySize(custom_images[0].img, 5, 5, nt::ColorPair::GREEN_TEXT);
+		sleep(3);
 		display.addImageArbitrarySize(digits_8x8[1].img, 20, 5, nt::ColorPair::CUSTOM);
+		sleep(3);
 
         nti_hh_hi.setParent(&display); // For test
-        nti_hh_hi.setx(16);
+		//nti_hh_hi.setx(16);
+		sleep(3);
         display.addImageArbitrarySize(nti_hh_hi.image(), nti_hh_hi.x(), nti_hh_hi.y(), nti_hh_hi.colorPair());
+		sleep(3);
+		nti_hh_hi.setx(16);
+		sleep(3);
         display.addImageArbitrarySize(nti_hh_lo.image(), nti_hh_lo.x(), nti_hh_lo.y(), nti_hh_lo.colorPair());
         sleep(3);
     } else {
