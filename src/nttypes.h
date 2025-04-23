@@ -28,17 +28,6 @@ enum ColorPair {
 	CUSTOM
 };
 
-// Поддерживаемые размеры изображений
-enum ImageSize {
-	SIZE_4x4,
-	SIZE_8x4,
-	SIZE_4x8,
-	SIZE_8x8,
-	SIZE_8x16,
-	SIZE_16x8,
-	SIZE_16x16
-};
-
 }
 // End of header guard
 #endif // NTTYPES_H

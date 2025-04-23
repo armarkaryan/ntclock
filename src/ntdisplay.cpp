@@ -37,10 +37,9 @@ NTDisplay::~NTDisplay() {
 // Добавить изображение для отображения
 void NTDisplay::addImage(const std::vector<std::string>& image,
 								int x, int y,
-								nt::ColorPair color,
-								nt::ImageSize size) {
+								nt::ColorPair color) {
 	std::lock_guard<std::mutex> lock(images_mutex);
-	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color, size);
+	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color);
 	images.push_back(img);
 	needs_redraw = true;
 }
@@ -49,7 +48,7 @@ void NTDisplay::addImage(const std::vector<std::string>& image,
 void NTDisplay::addImageArbitrarySize(const std::vector<std::string>& image,
 												int x, int y, nt::ColorPair color) {
 	std::lock_guard<std::mutex> lock(images_mutex);
-	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color, nt::SIZE_16x16);
+	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color);
 	images.push_back(img);
 	needs_redraw = true;
 }
@@ -198,40 +197,6 @@ void NTDisplay::worker() {
 
         endwin();
 }
-
-/*
-//
-void NTDisplay::drawImages() {
-        std::lock_guard<std::mutex> lock(images_mutex);
-        
-        clear();
-        
-        // Установка фона
-        bkgd(COLOR_PAIR(DEFAULT) | ' ');
-        
-        for (const auto& img : images) {
-            // Установка цвета
-            attron(COLOR_PAIR(img.colorPair));
-            
-            // Отрисовка изображения (теперь без ограничений по размеру)
-            for (size_t y = 0; y < img.image.size() && (img.y + static_cast<int>(y)) < term_height; y++) {
-                if (img.y + static_cast<int>(y) < 0) continue;
-                
-                const std::string& line = img.image[y];
-                for (size_t x = 0; x < line.size() && (img.x + static_cast<int>(x)) < term_width; x++) {
-                    if (img.x + static_cast<int>(x) < 0) continue;
-                    
-                    mvaddch(img.y + static_cast<int>(y), img.x + static_cast<int>(x), line[x]);
-                }
-            }
-            
-            // Сброс цвета
-            attroff(COLOR_PAIR(img.colorPair));
-        }
-        
-        refresh();
-}
-*/
 
 void NTDisplay::drawImages() {
 	for (const auto& img : images) {

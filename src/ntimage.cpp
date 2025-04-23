@@ -5,7 +5,7 @@
 // Простой конструктор
 NTImage::NTImage(NTObject* parent, const std::string& name)
 	: NTObject(parent, name), _width(8), _height(8), _transparent(true),
-	  _x(0), _y(0), _colorPair(nt::DEFAULT), _size(nt::SIZE_8x8)
+	  _x(0), _y(0), _colorPair(nt::DEFAULT)
 {
     // To do... image, width, height, chanals
 }
@@ -13,8 +13,8 @@ NTImage::NTImage(NTObject* parent, const std::string& name)
 // Полный конструктор
 NTImage::NTImage(NTObject* parent, const std::string& name,
                const std::vector<std::string>& image,
-			   int x, int y, nt::ColorPair colorPair, nt::ImageSize size)
-    : NTObject(parent, name), _image(image), _x(x), _y(y), _colorPair(colorPair), _size(size)
+			   int x, int y, nt::ColorPair colorPair)
+	: NTObject(parent, name), _image(image), _x(x), _y(y), _colorPair(colorPair)
 {
     // To do... image, width, height, chanals
 }
@@ -25,8 +25,7 @@ NTImage::NTImage(const NTImage& other)
       _image(other._image),
       _x(other._x),
       _y(other._y),
-      _colorPair(other._colorPair),
-      _size(other._size)
+	  _colorPair(other._colorPair)
 {
     // To do... width, height, chanals
 }
@@ -43,7 +42,6 @@ NTImage& NTImage::operator=(const NTImage& other)
 		_x = other._x;
 		_y = other._y;
         _colorPair = other._colorPair;
-		_size = other._size;
 	}
 	return *this;
 }
@@ -85,12 +83,6 @@ void NTImage::setColorPair(nt::ColorPair colorPair)
 }
 
 //
-void NTImage::setImageSize(nt::ImageSize size)
-{
-	_size = size;
-}
-
-//
 void NTImage::copyFrom(const NTImage& other)
 {
 	_image = other._image;
@@ -100,7 +92,6 @@ void NTImage::copyFrom(const NTImage& other)
 	_x = other._x;
 	_y = other._y;
     _colorPair = other._colorPair;
-	_size = other._size;
 }
 
 void NTImage::clearImage()

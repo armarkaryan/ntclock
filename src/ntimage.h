@@ -18,7 +18,7 @@ public:
 	NTImage(NTObject *parent = nullptr, const std::string &name = "");
     NTImage(NTObject *parent, const std::string& name,
 			   const std::vector<std::string>& image,
-			   int x, int y, nt::ColorPair colorPair, nt::ImageSize size);
+			   int x, int y, nt::ColorPair colorPair);
 	~NTImage();
 
 	// Конструктор копирования
@@ -51,10 +51,6 @@ public:
 	unsigned int height() const;
 
 	//
-	void setImageSize(nt::ImageSize size);
-
-
-	//
 	void setTransparent(unsigned int transparent){ _transparent = transparent; }
 	bool isTransparent() const;
 
@@ -66,7 +62,6 @@ private:
 	int _x;
 	int _y;
 	nt::ColorPair _colorPair;
-	nt::ImageSize _size;
 
 	void copyFrom(const NTImage& other);
 	void clearImage();

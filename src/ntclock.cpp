@@ -57,8 +57,10 @@ int main(int argc, char*argv[]) {
 	//
     NTDisplay display;
 
-	NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
-	NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	//NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT);
+	//NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT);
 	sleep(3);
 
 	if (display.isRgbSupported()) {

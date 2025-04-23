@@ -27,8 +27,7 @@ public:
 	// Добавить изображение для отображения
 	void addImage(const std::vector<std::string>& image, // image - вектор строк, где каждая строка представляет линию изображения
 					int x, int y,	// x, y - позиция верхнего левого угла
-					nt::ColorPair color = nt::DEFAULT, // color - цветовая схема
-					nt::ImageSize size = nt::SIZE_8x8); // size - стандартный размер изображения
+					nt::ColorPair color = nt::DEFAULT); // color - цветовая схема
 
 	// Добавить изображение произвольного размера
 	// Аналогично addImage, но без ограничений по размеру
