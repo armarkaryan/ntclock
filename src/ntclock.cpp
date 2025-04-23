@@ -54,21 +54,14 @@ void hview(){
 
 
 int main(int argc, char*argv[]) {
-/*
-    NTObject no0(0, "0");
-    std::cout << "no0" << " " << no0.name() << std::endl;
-    NTObject no1(&no0, "1");  // Правильно: указатель + строка
-    std::cout << "no1.parent().name(): " << no1.parent()->name() << std::endl;
-    NTObject no2(&no1, "2");  // Правильно: указатель + строка
-    std::cout << "no2.parent().name(): " << no2.parent()->name() << std::endl;
-    sleep(5);
-*/
+	//
     NTDisplay display;
 
-	//NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8], 25, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
-	//NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9], 24, 16, NTObject::ColorPair::MAGENTA_TEXT, NTObject::ImageSize::SIZE_8x8);
-	NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
-	NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	//NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	NTImage nti_hh_hi(&display, "Hour_hi", digits_8x8[8].img, 25, 16, nt::ColorPair::MAGENTA_TEXT);
+	//NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT, nt::ImageSize::SIZE_8x8);
+	NTImage nti_hh_lo(&display, "Hour_lo", digits_8x8[9].img, 24, 16, nt::ColorPair::MAGENTA_TEXT);
+	sleep(3);
 
 	if (display.isRgbSupported()) {
         // Заливаем терминал градиентным синим фоном
@@ -77,25 +70,26 @@ int main(int argc, char*argv[]) {
         // Устанавливаем оранжевый текст (RGB) и прозрачный фон
         display.setRgbColor(255, 165, 0,   // Оранжевый (R=255, G=165, B=0)
                             0, 100, 0);       // Чёрный фон (но он прозрачен из-за bkgd)
-/*
-        display.addImage(digits_8x8[0], 10, 5, NTDisplay::CUSTOM);
-        display.addImage(digits_8x8[1], 20, 5, NTDisplay::CUSTOM);
-        display.addImageArbitrarySize(custom_image, 5, 5, NTDisplay::GREEN_TEXT);
-        display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTDisplay::CUSTOM);
-*/
-		display.addImageArbitrarySize(digits_8x8[0].img, 10, 5, nt::ColorPair::CUSTOM);
-		display.addImageArbitrarySize(custom_images[0].img, 5, 5, nt::ColorPair::GREEN_TEXT);
-		display.addImageArbitrarySize(digits_8x8[1].img, 20, 5, nt::ColorPair::CUSTOM);
+
+		display.addImage(digits_8x8[0].img, 10, 5, nt::ColorPair::CUSTOM);
+		sleep(3);
+		display.addImage(custom_images[0].img, 5, 5, nt::ColorPair::GREEN_TEXT);
+		sleep(3);
+		display.addImage(digits_8x8[1].img, 20, 5, nt::ColorPair::CUSTOM);
+		sleep(3);
 
         nti_hh_hi.setParent(&display); // For test
-        nti_hh_hi.setx(16);
-        display.addImageArbitrarySize(nti_hh_hi.image(), nti_hh_hi.x(), nti_hh_hi.y(), nti_hh_hi.colorPair());
-        display.addImageArbitrarySize(nti_hh_lo.image(), nti_hh_lo.x(), nti_hh_lo.y(), nti_hh_lo.colorPair());
+		sleep(3);
+		display.addImage(nti_hh_hi.image(), nti_hh_hi.x(), nti_hh_hi.y(), nti_hh_hi.colorPair());
+		sleep(3);
+		nti_hh_hi.setx(16);
+		sleep(3);
+		display.addImage(nti_hh_lo.image(), nti_hh_lo.x(), nti_hh_lo.y(), nti_hh_lo.colorPair());
         sleep(3);
     } else {
         // Если RGB не поддерживается, используем стандартные цвета
 		display.fillBackground(COLOR_BLUE);
-		display.addImageArbitrarySize(digits_8x8[0].img, 10, 5, nt::ColorPair::YELLOW_TEXT);
+		display.addImage(digits_8x8[0].img, 10, 5, nt::ColorPair::YELLOW_TEXT);
         sleep(3);
     }
     return 0;
