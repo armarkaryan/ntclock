@@ -44,15 +44,6 @@ void NTDisplay::addImage(const std::vector<std::string>& image,
 	needs_redraw = true;
 }
 
-// Добавить изображение произвольного размера
-void NTDisplay::addImageArbitrarySize(const std::vector<std::string>& image,
-												int x, int y, nt::ColorPair color) {
-	std::lock_guard<std::mutex> lock(images_mutex);
-	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color);
-	images.push_back(img);
-	needs_redraw = true;
-}
-
 // Очистить все изображения
 void NTDisplay::clearImages() {
 	std::lock_guard<std::mutex> lock(images_mutex);

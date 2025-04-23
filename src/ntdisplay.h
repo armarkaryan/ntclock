@@ -29,12 +29,6 @@ public:
 					int x, int y,	// x, y - позиция верхнего левого угла
 					nt::ColorPair color = nt::DEFAULT); // color - цветовая схема
 
-	// Добавить изображение произвольного размера
-	// Аналогично addImage, но без ограничений по размеру
-    void addImageArbitrarySize(const std::vector<std::string>& image,   // image - вектор строк, где каждая строка представляет линию изображения
-                                    int x, int y,   // x, y - позиция верхнего левого угла
-									nt::ColorPair color = nt::DEFAULT); // color - цветовая схема
-
 	// Очистить все изображения
 	// Удаляет все добавленные изображения
 	void clearImages();

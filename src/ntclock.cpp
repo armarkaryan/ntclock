@@ -70,32 +70,26 @@ int main(int argc, char*argv[]) {
         // Устанавливаем оранжевый текст (RGB) и прозрачный фон
         display.setRgbColor(255, 165, 0,   // Оранжевый (R=255, G=165, B=0)
                             0, 100, 0);       // Чёрный фон (но он прозрачен из-за bkgd)
-/*
-        display.addImage(digits_8x8[0], 10, 5, NTDisplay::CUSTOM);
-        display.addImage(digits_8x8[1], 20, 5, NTDisplay::CUSTOM);
-        display.addImageArbitrarySize(custom_image, 5, 5, NTDisplay::GREEN_TEXT);
-        display.addImageArbitrarySize(digits_8x8[3], 25, 25, NTDisplay::CUSTOM);
-*/
-		display.addImageArbitrarySize(digits_8x8[0].img, 10, 5, nt::ColorPair::CUSTOM);
+
+		display.addImage(digits_8x8[0].img, 10, 5, nt::ColorPair::CUSTOM);
 		sleep(3);
-		display.addImageArbitrarySize(custom_images[0].img, 5, 5, nt::ColorPair::GREEN_TEXT);
+		display.addImage(custom_images[0].img, 5, 5, nt::ColorPair::GREEN_TEXT);
 		sleep(3);
-		display.addImageArbitrarySize(digits_8x8[1].img, 20, 5, nt::ColorPair::CUSTOM);
+		display.addImage(digits_8x8[1].img, 20, 5, nt::ColorPair::CUSTOM);
 		sleep(3);
 
         nti_hh_hi.setParent(&display); // For test
-		//nti_hh_hi.setx(16);
 		sleep(3);
-        display.addImageArbitrarySize(nti_hh_hi.image(), nti_hh_hi.x(), nti_hh_hi.y(), nti_hh_hi.colorPair());
+		display.addImage(nti_hh_hi.image(), nti_hh_hi.x(), nti_hh_hi.y(), nti_hh_hi.colorPair());
 		sleep(3);
 		nti_hh_hi.setx(16);
 		sleep(3);
-        display.addImageArbitrarySize(nti_hh_lo.image(), nti_hh_lo.x(), nti_hh_lo.y(), nti_hh_lo.colorPair());
+		display.addImage(nti_hh_lo.image(), nti_hh_lo.x(), nti_hh_lo.y(), nti_hh_lo.colorPair());
         sleep(3);
     } else {
         // Если RGB не поддерживается, используем стандартные цвета
 		display.fillBackground(COLOR_BLUE);
-		display.addImageArbitrarySize(digits_8x8[0].img, 10, 5, nt::ColorPair::YELLOW_TEXT);
+		display.addImage(digits_8x8[0].img, 10, 5, nt::ColorPair::YELLOW_TEXT);
         sleep(3);
     }
     return 0;
