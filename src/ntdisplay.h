@@ -25,9 +25,13 @@ public:
     ~NTDisplay(); // Освобождает ресурсы ncurses и останавливает поток
 
 	// Добавить изображение для отображения
-	void addImage(const std::vector<std::string>& image, // image - вектор строк, где каждая строка представляет линию изображения
-					int x, int y,	// x, y - позиция верхнего левого угла
-					nt::ColorPair color = nt::DEFAULT); // color - цветовая схема
+	/*void addImage(const std::string& name,					// name - имя изобржения
+					const std::vector<std::string>& image,	// image - вектор строк, где каждая строка представляет линию изображения
+					int x, int y,							// x, y - позиция верхнего левого угла
+					nt::ColorPair color = nt::DEFAULT);		// color - цветовая схема
+*/
+	// Добавить изображение для отображения
+	void addImage(const NTImage &img);
 
 	// Очистить все изображения
 	// Удаляет все добавленные изображения
@@ -55,12 +59,13 @@ public:
 	bool isRgbSupported() const;  // Проверка поддержки RGB цветов
 
 private:
-	std::vector<NTImage> images;      // Вектор всех изображений
+	//std::vector<NTImage> images;      // Вектор всех изображений
+	std::vector<const NTImage*> _images;
 
 	std::mutex images_mutex;           // Мьютекс для доступа к images
 	std::mutex colors_mutex;           // Мьютекс для работы с цветами
 	std::atomic<bool> running;         // Флаг работы потока отрисовки
-	std::atomic<bool> needs_redraw;    // Флаг необходимости перерисовки
+	std::atomic<bool> _needsRedraw;    // Флаг необходимости перерисовки
 	std::atomic<int> term_width;       // Текущая ширина терминала
 	std::atomic<int> term_height;      // Текущая высота терминала
 	std::thread worker_thread;         // Поток отрисовки

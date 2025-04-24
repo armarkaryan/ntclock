@@ -8,6 +8,8 @@ NTImage::NTImage(NTObject* parent, const std::string& name)
 	  _x(0), _y(0), _colorPair(nt::DEFAULT)
 {
     // To do... image, width, height, chanals
+	notifyObservers();
+	_changed = true;
 }
 
 // Полный конструктор
@@ -17,6 +19,8 @@ NTImage::NTImage(NTObject* parent, const std::string& name,
 	: NTObject(parent, name), _image(image), _x(x), _y(y), _colorPair(colorPair)
 {
     // To do... image, width, height, chanals
+	notifyObservers();
+	_changed = true;
 }
 
 // Конструктор копирования
@@ -28,6 +32,8 @@ NTImage::NTImage(const NTImage& other)
 	  _colorPair(other._colorPair)
 {
     // To do... width, height, chanals
+	notifyObservers();
+	_changed = true;
 }
 
 // Деструктор
@@ -43,6 +49,8 @@ NTImage& NTImage::operator=(const NTImage& other)
 		_y = other._y;
         _colorPair = other._colorPair;
 	}
+	notifyObservers();
+	_changed = true;
 	return *this;
 }
 
@@ -59,15 +67,11 @@ unsigned int NTImage::height() const
 }
 
 //
-bool NTImage::isTransparent() const
-{
-	return _transparent;
-}
-
-//
 void NTImage::setImage(const std::vector<std::string>& image)
 {
     _image = image;
+	notifyObservers();
+	_changed = true;
 }
 
 //
@@ -80,6 +84,8 @@ const std::vector<std::string>& NTImage::image() const
 void NTImage::setColorPair(nt::ColorPair colorPair)
 {
     _colorPair = colorPair;
+	notifyObservers();
+	_changed = true;
 }
 
 //
@@ -92,12 +98,17 @@ void NTImage::copyFrom(const NTImage& other)
 	_x = other._x;
 	_y = other._y;
     _colorPair = other._colorPair;
+	notifyObservers();
+	_changed = true;
 }
 
+//
 void NTImage::clearImage()
 {
 	_image.clear();
 	_width = 0;
 	_height = 0;
 	_transparent = true;
+	notifyObservers();
+	_changed = true;
 }

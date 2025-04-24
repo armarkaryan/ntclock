@@ -16,7 +16,7 @@ NTDisplay::NTDisplay(NTObject* parent, const std::string& name)
 {
 	// initialization code
 	running = false;
-	needs_redraw =false;
+	_needsRedraw =false;
 	term_width = 0;
 	term_height = 0;
 	bg_color = COLOR_BLACK;
@@ -35,20 +35,28 @@ NTDisplay::~NTDisplay() {
 }
 
 // Добавить изображение для отображения
-void NTDisplay::addImage(const std::vector<std::string>& image,
-								int x, int y,
-								nt::ColorPair color) {
+void NTDisplay::addImage(const NTImage &img)
+{
 	std::lock_guard<std::mutex> lock(images_mutex);
-	NTImage img(static_cast<NTObject*>(this), "img", image, x, y, color);
-	images.push_back(img);
-	needs_redraw = true;
+	_images.push_back(&img);
+	img.addObserver([this]() { _needsRedraw = true; });
+	_needsRedraw = true;
+
 }
+/*
+void addChild(const NTImage &img) {
+		images.push_back(&img);
+		// Подписываемся на изменения ребёнка
+		img.addObserver([this]() { _needsRedraw = true; });
+	}
+*/
 
 // Очистить все изображения
-void NTDisplay::clearImages() {
+void NTDisplay::clearImages()
+{
 	std::lock_guard<std::mutex> lock(images_mutex);
-	images.clear();
-	needs_redraw = true;
+	_images.clear();
+	_needsRedraw = true;
 }
 
 // Установить пользовательские цвета (текст/фон) в стандартной палитре
@@ -78,7 +86,7 @@ void NTDisplay::fillBackground(short bg_color) {
 	this->bg_color = bg_color;
 	bkgd(COLOR_PAIR(nt::DEFAULT) | ' ');
 	init_pair(nt::DEFAULT, COLOR_WHITE, bg_color);
-	needs_redraw = true;
+	_needsRedraw = true;
 }
 
 // Залить весь терминал RGB-цветом фона (если поддерживается)
@@ -92,7 +100,7 @@ bool NTDisplay::fillBackgroundRgb(short r, short g, short b) {
 	init_pair(nt::DEFAULT, COLOR_WHITE, 102);
 	bkgd(COLOR_PAIR(nt::DEFAULT) | ' ');
 	
-	needs_redraw = true;
+	_needsRedraw = true;
 	return true;
 }
 
@@ -172,13 +180,13 @@ void NTDisplay::worker() {
                 term_height = new_height;
                 clear();
                 refresh();
-                needs_redraw = true;
+				_needsRedraw = true;
             }
 
             // Отрисовка изображений
-            if (needs_redraw) {
+			if (_needsRedraw) {
                 drawImages();
-                needs_redraw = false;
+				_needsRedraw = false;
             }
 
             // Ожидание событий
@@ -190,20 +198,20 @@ void NTDisplay::worker() {
 }
 
 void NTDisplay::drawImages() {
-	for (const auto& img : images) {
-        attron(COLOR_PAIR(img.colorPair()));
+	for (const auto& img : _images) {
+		attron(COLOR_PAIR(img->colorPair()));
 
-		for (size_t y = 0; y < img.image().size() && (img.y() + static_cast<int>(y)) < term_height; y++) {
-			if (img.y() + static_cast<int>(y) < 0) continue;
+		for (size_t y = 0; y < img->image().size() && (img->y() + static_cast<int>(y)) < term_height; y++) {
+			if (img->y() + static_cast<int>(y) < 0) continue;
 
-			const std::string& line = img.image()[y];
-			for (size_t x = 0; x < line.size() && (img.x() + static_cast<int>(x)) < term_width; x++) {
-				if (img.x() + static_cast<int>(x) < 0) continue;
-				mvaddch(img.y() + static_cast<int>(y), img.x() + static_cast<int>(x), line[x]);
+			const std::string& line = img->image()[y];
+			for (size_t x = 0; x < line.size() && (img->x() + static_cast<int>(x)) < term_width; x++) {
+				if (img->x() + static_cast<int>(x) < 0) continue;
+				mvaddch(img->y() + static_cast<int>(y), img->x() + static_cast<int>(x), line[x]);
 			}
 		}
 
-        attroff(COLOR_PAIR(img.colorPair()));
+		attroff(COLOR_PAIR(img->colorPair()));
 	}
 
 	refresh();

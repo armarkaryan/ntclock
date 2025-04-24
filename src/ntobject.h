@@ -14,6 +14,8 @@
 /*!	\brief	Standard string library */
 #include <string>
 
+#include <functional>
+
 /*!	\brief	Base NT types */
 #include "nttypes.h"
 
@@ -54,9 +56,24 @@ public:
      */
     std::string name() const;
 
+	using Callback = std::function<void()>;
+
+	void addObserver(Callback callback) const{
+		_observers.push_back(callback);
+	}
+
+	void notifyObservers() {
+		for (auto& callback : _observers) {
+			callback();
+		}
+	}
+
 private:
     NTObject *_parent;	/*!< Pointer to parent object */
     std::string _name;	/*!< Object name */
+
+	//std::vector<Callback> _observers;
+	mutable std::vector<Callback> _observers;  // mutable разрешает изменение даже в const-методах
 };
 
 #endif // NTOBJECT_H
