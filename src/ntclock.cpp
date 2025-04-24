@@ -52,7 +52,7 @@ void hview(){
 }
 */
 
-
+/*
 int main(int argc, char*argv[]) {
 	//
     NTDisplay display;
@@ -77,20 +77,14 @@ int main(int argc, char*argv[]) {
 
 	int x = 0;
 
-
-
 	if (display.isRgbSupported()) {
-        // Заливаем терминал градиентным синим фоном
+		// Заливаем терминал градиентным синим фономntlayoutmanager.h
         display.fillBackgroundRgb(30, 30, 100);
 
         // Устанавливаем оранжевый текст (RGB) и прозрачный фон
         display.setRgbColor(255, 165, 0,   // Оранжевый (R=255, G=165, B=0)
 							30, 30, 100);       // Чёрный фон (но он прозрачен из-за bkgd)
-/*
-		display.addImage("Image_01", digits_8x8[0].img, 10, 5, nt::ColorPair::CUSTOM);
-		display.addImage("Image_02", custom_images[0].img, 15, 15, nt::ColorPair::GREEN_TEXT);
-		display.addImage("Image_03", digits_8x8[1].img, 20, 5, nt::ColorPair::CUSTOM);
-		*/
+
 while(1){
 		//nti_hh_hi.setParent(&display); // For test
 		hh_hi.setx(x);
@@ -105,4 +99,64 @@ while(1){
 		sleep(1);
 	}
     return 0;
+}
+*/
+
+#include "ntlayoutmanager.h"
+
+int main(int argc, char* argv[]) {
+	NTDisplay display;
+	NTLayoutManager layout(&display, "clock_layout");
+
+	layout.setLayoutType(NTLayoutManager::LayoutType::HORIZONTAL);
+	layout.setSpacing(1); // Space between digits
+
+	// Create digit images
+	NTImage hh_hi(&display, "hh_hi", digits_8x8[0].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
+	NTImage hh_lo(&display, "hh_lo", digits_8x8[1].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
+	NTImage mm_hi(&display, "mm_hi", digits_8x8[2].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
+	NTImage mm_lo(&display, "mm_lo", digits_8x8[3].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
+	NTImage ss_hi(&display, "ss_hi", digits_8x8[4].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
+	NTImage ss_lo(&display, "ss_lo", digits_8x8[5].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
+
+	// Add images to layout manager
+	layout.addImage(&hh_hi);
+	layout.addImage(&hh_lo);
+	layout.addImage(&mm_hi);
+	layout.addImage(&mm_lo);
+	layout.addImage(&ss_hi);
+	layout.addImage(&ss_lo);
+
+	// Add images to display
+	display.addImage(hh_hi);
+	display.addImage(hh_lo);
+	display.addImage(mm_hi);
+	display.addImage(mm_lo);
+	display.addImage(ss_hi);
+	display.addImage(ss_lo);
+
+	// Update layout and center it
+	layout.updateLayout(display.width(), display.height());
+	//layout.updateLayout(50, 50);
+	//layout.centerInContainer(display.width(), display.height());
+
+	if (display.isRgbSupported()) {
+		display.fillBackgroundRgb(50, 50, 100);
+		display.setRgbColor(255, 165, 0, 30, 30, 100);
+
+		unsigned int x = 0;
+		while(1) {
+			// Your update logic here
+			//nti_hh_hi.setParent(&display); // For test
+			hh_hi.setx(x);hh_lo.setx(display.width()-8-x);
+			if(x < display.width()-8)x++;else x=0;
+
+			sleep(1);
+		}
+	} else {
+		display.fillBackground(COLOR_BLUE);
+		sleep(1);
+	}
+
+	return 0;
 }
