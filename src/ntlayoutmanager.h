@@ -7,6 +7,7 @@
 #include <functional>
 #include "nttypes.h"
 #include "ntimage.h"
+#include "ntdisplay.h"
 
 class NTLayoutManager : public NTObject {
 public:
@@ -42,8 +43,15 @@ public:
 	void updateLayout(int containerWidth, int containerHeight);
 
 	// Center the entire layout in the container
-	void centerInContainer(int containerWidth, int containerHeight);
+	void centerInContainer();
+	//void centerInContainer(int containerWidth, int containerHeight);
+//--
+	// Установить контейнер (NTDisplay), за которым будем следить
+	void setContainer(NTDisplay* display);
 
+	// Обновить layout с текущими размерами контейнера
+	void updateLayout();
+//--
 private:
 	LayoutType _layoutType;
 	int _spacing;
@@ -53,6 +61,11 @@ private:
 		int bottom;
 		int left;
 	} _margins;
+//--
+	NTDisplay* _container = nullptr;
+	std::function<void()> _resizeHandler;
+//--
+size_t _resizeObserverId = 0;
 
 	std::vector<NTImage*> _images;
 	std::mutex _imagesMutex;

@@ -105,52 +105,60 @@ while(1){
 #include "ntlayoutmanager.h"
 
 int main(int argc, char* argv[]) {
+
 	NTDisplay display;
-	NTLayoutManager layout(&display, "clock_layout");
+	NTLayoutManager layout;
 
+	// Устанавливаем контейнер для layout manager
+	layout.setContainer(&display);
+
+	// Настройка layout
 	layout.setLayoutType(NTLayoutManager::LayoutType::HORIZONTAL);
-	layout.setSpacing(1); // Space between digits
+	layout.setSpacing(10);
 
-	// Create digit images
+	// Создание и добавление изображений
 	NTImage hh_hi(&display, "hh_hi", digits_8x8[0].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
 	NTImage hh_lo(&display, "hh_lo", digits_8x8[1].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
 	NTImage mm_hi(&display, "mm_hi", digits_8x8[2].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
 	NTImage mm_lo(&display, "mm_lo", digits_8x8[3].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
 	NTImage ss_hi(&display, "ss_hi", digits_8x8[4].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
 	NTImage ss_lo(&display, "ss_lo", digits_8x8[5].img, 0, 0, nt::ColorPair::MAGENTA_TEXT);
+	// ... другие цифры ...
 
-	// Add images to layout manager
 	layout.addImage(&hh_hi);
 	layout.addImage(&hh_lo);
 	layout.addImage(&mm_hi);
 	layout.addImage(&mm_lo);
 	layout.addImage(&ss_hi);
 	layout.addImage(&ss_lo);
+	// ... другие цифры ...
 
-	// Add images to display
 	display.addImage(hh_hi);
 	display.addImage(hh_lo);
 	display.addImage(mm_hi);
 	display.addImage(mm_lo);
 	display.addImage(ss_hi);
 	display.addImage(ss_lo);
+	// ... другие цифры ...
 
-	// Update layout and center it
-	layout.updateLayout(display.width(), display.height());
-	//layout.updateLayout(50, 50);
-	//layout.centerInContainer(display.width(), display.height());
-
+	// Layout автоматически обновится при изменении размера терминала
+/*
+	// Основной цикл
+	//while (running) {
+	while (1) {
+		// Обновление данных (например, времени)
+		// Layout будет автоматически пересчитываться при изменении размера
+	}
+*/
 	if (display.isRgbSupported()) {
 		display.fillBackgroundRgb(50, 50, 100);
 		display.setRgbColor(255, 165, 0, 30, 30, 100);
 
-		unsigned int x = 0;
+		int x = 0;
 		while(1) {
 			// Your update logic here
-			//nti_hh_hi.setParent(&display); // For test
 			hh_hi.setx(x);hh_lo.setx(display.width()-8-x);
 			if(x < display.width()-8)x++;else x=0;
-
 			sleep(1);
 		}
 	} else {

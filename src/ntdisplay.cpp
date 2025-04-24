@@ -163,12 +163,29 @@ void NTDisplay::stop() {
 	}
 	endwin();
 }
-
+/*
 //
 void NTDisplay::worker() {
+int new_width = 0, new_height = 0;
+
         signal(SIGWINCH, [](int) {});
 
         getmaxyx(stdscr, term_height, term_width);
+
+// В методе worker(), при обнаружении изменения размера:
+if (new_width != term_width || new_height != term_height) {
+	term_width = new_width;
+	term_height = new_height;
+	clear();
+	refresh();
+	_needsRedraw = true;
+
+	// Уведомляем наблюдателей
+	std::lock_guard<std::mutex> lock(_observersMutex);
+	for (auto& observer : _resizeObservers) {
+		observer();
+	}
+}
 
         while (running) {
             // Проверка изменения размера терминала
@@ -196,6 +213,44 @@ void NTDisplay::worker() {
 
         endwin();
 }
+*/
+void NTDisplay::worker() {
+	signal(SIGWINCH, [](int) {});
+
+	getmaxyx(stdscr, term_height, term_width);
+
+	while (running) {
+		// Проверка изменения размера терминала
+		int new_width, new_height;
+		getmaxyx(stdscr, new_height, new_width);
+
+		if (new_width != term_width || new_height != term_height) {
+			term_width = new_width;
+			term_height = new_height;
+			clear();
+			refresh();
+			_needsRedraw = true;
+
+			// Уведомляем наблюдателей
+			std::lock_guard<std::mutex> lock(_observersMutex);
+			for (auto& [id, observer] : _resizeObservers) {
+				observer();  // Вызываем только функцию, игнорируя id
+			}
+		}
+
+		// Остальной код...
+		// Отрисовка изображений
+			if (_needsRedraw) {
+				drawImages();
+				_needsRedraw = false;
+			}
+
+			// Ожидание событий
+			std::unique_lock<std::mutex> lock(images_mutex);
+			cv.wait_for(lock, std::chrono::milliseconds(100));
+	}
+	endwin();
+}
 
 void NTDisplay::drawImages() {
 	for (const auto& img : _images) {
@@ -220,3 +275,31 @@ void NTDisplay::drawImages() {
 // Обработчик сигнала изменения размера терминала
 void NTDisplay::handleResize(int sig){
 }
+
+//--
+/*void NTDisplay::addResizeObserver(std::function<void()> observer) {
+	std::lock_guard<std::mutex> lock(_observersMutex);
+	_resizeObservers.push_back(observer);
+}*/
+size_t NTDisplay::addResizeObserver(std::function<void()> observer) {
+	std::lock_guard<std::mutex> lock(_observersMutex);
+	size_t id = _nextObserverId++;
+	_resizeObservers.emplace_back(id, std::move(observer));
+	return id;
+}
+/*void NTDisplay::removeResizeObserver(std::function<void()> observer) {
+	std::lock_guard<std::mutex> lock(_observersMutex);
+	_resizeObservers.erase(
+		std::remove(_resizeObservers.begin(), _resizeObservers.end(), observer),
+		_resizeObservers.end()
+	);
+}*/
+void NTDisplay::removeResizeObserver(size_t id) {
+	std::lock_guard<std::mutex> lock(_observersMutex);
+	_resizeObservers.erase(
+		std::remove_if(_resizeObservers.begin(), _resizeObservers.end(),
+			[id](const auto& pair) { return pair.first == id; }),
+		_resizeObservers.end()
+	);
+}
+//--

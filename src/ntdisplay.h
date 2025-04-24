@@ -22,13 +22,13 @@ public:
 	// Конструктор/деструктор
     NTDisplay(NTObject* parent = nullptr, const std::string& name ="");
     ~NTDisplay(); // Освобождает ресурсы ncurses и останавливает поток
-
+/*
 	//
 	unsigned int width(){ return term_width; };
 
 	//
 	unsigned int height(){ return term_height; };
-
+*/
 	// Добавить изображение для отображения
 	void addImage(const NTImage &img);
 
@@ -56,8 +56,27 @@ public:
 
 	// Проверить, поддерживается ли RGB
 	bool isRgbSupported() const;  // Проверка поддержки RGB цветов
+//--
+	// Добавить наблюдателя за изменением размера
+	//void addResizeObserver(std::function<void()> observer);
+	size_t addResizeObserver(std::function<void()> observer);
+
+	// Удалить наблюдателя
+	//void removeResizeObserver(std::function<void()> observer);
+	void removeResizeObserver(size_t id);
+
+	// Получить текущие размеры
+	int width() const { return term_width.load(); }
+	int height() const { return term_height.load(); }
+//--
 
 private:
+//--
+	//std::vector<std::function<void()>> _resizeObservers;
+	std::vector<std::pair<size_t, std::function<void()>>> _resizeObservers;
+	size_t _nextObserverId = 0;
+	std::mutex _observersMutex;
+//--
 	std::vector<const NTImage*> _images;
 
 	std::mutex images_mutex;           // Мьютекс для доступа к images
