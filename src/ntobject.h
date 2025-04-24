@@ -72,7 +72,6 @@ private:
     NTObject *_parent;	/*!< Pointer to parent object */
     std::string _name;	/*!< Object name */
 
-	//std::vector<Callback> _observers;
 	mutable std::vector<Callback> _observers;  // mutable разрешает изменение даже в const-методах
 };
 

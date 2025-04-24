@@ -66,22 +66,22 @@ public:
 	/*! \brief      Sets the X coordinate
 	 *  \param      x   New X coordinate value
 	 */
-	void setx(int x){_x = x; notifyObservers(); _changed = true; }
+	void setx(int x);
 
 	/*! \brief      Gets the X coordinate
 	 *  \return     Current X coordinate value
 	 */
-	int x() const { return _x; }
+	int x() const;
 
 	/*! \brief      Sets the Y coordinate
 	 *  \param      y   New Y coordinate value
 	 */
-	void sety(int y){ _y = y; notifyObservers(); _changed = true; }
+	void sety(int y);
 
 	/*! \brief      Gets the Y coordinate
 	 *  \return     Current Y coordinate value
 	 */
-	int y() const { return _y; }
+	int y() const;
 
 	/*! \brief      Sets the image data
 	 *  \param      image   Vector of strings representing the new image data
@@ -101,12 +101,12 @@ public:
 	/*! \brief      Gets the color pair
 	 *  \return     Current color pair value
 	 */
-	nt::ColorPair colorPair() const { return _colorPair; }
+	nt::ColorPair colorPair() const;
 
 	/*! \brief      Sets the image width
 	 *  \param      width   New width value
 	 */
-	void setWidth(unsigned int width){ _width = width; notifyObservers(); _changed = true; }
+	void setWidth(unsigned int width);
 
 	/*! \brief      Gets the image width
 	 *  \return     Current width value
@@ -116,7 +116,7 @@ public:
 	/*! \brief      Sets the image height
 	 *  \param      height  New height value
 	 */
-	void setHeight(unsigned int height){ _height = height; notifyObservers(); _changed = true; }
+	void setHeight(unsigned int height);
 
 	/*! \brief      Gets the image height
 	 *  \return     Current height value
@@ -126,22 +126,12 @@ public:
 	/*! \brief      Sets the transparency flag
 	 *  \param      transparent New transparency value
 	 */
-	void setTransparent(unsigned int transparent){ _transparent = transparent; notifyObservers(); _changed = true;}
+	void setTransparent(bool transparent);
 
 	/*! \brief      Gets the image transparency flag
 	 *  \return     true if transparent false otherwise
 	 */
-	bool isTransparent() const { return _transparent; }
-
-	/*! \brief      Set the changed flag
-	 *  \return     height  New height value
-	 */
-	void setChanged(const bool &changed) { _changed = changed; }
-
-	/*! \brief      Checks if image parameters is changed
-	 *  \return     true if changed false otherwise
-	 */
-	bool isChanged() const { return _changed; }
+	bool isTransparent() const;
 
 private:
 	std::vector<std::string> _image;	/*!< Image data storage */
@@ -151,7 +141,6 @@ private:
 	int _x;								/*!< X coordinate */
 	int _y;								/*!< Y coordinate */
 	nt::ColorPair _colorPair;			/*!< Color pair attributes */
-	bool _changed;						/*!< Changed parameter flag */
 
 	/*! \brief      Copies data from another NTImage object
 	 *  \param      other   Reference to source NTImage object
