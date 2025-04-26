@@ -12,7 +12,7 @@
 #include <signal.h>
 
 #include "nttypes.h"
-#include "image_custom.h"
+#include "images.h"
 #include "digits_8x8.h"
 #include "digits_16x16.h"
 #include "ntimage.h"
@@ -22,12 +22,6 @@ public:
 	// Конструктор/деструктор
     NTDisplay(NTObject* parent = nullptr, const std::string& name ="");
     ~NTDisplay(); // Освобождает ресурсы ncurses и останавливает поток
-
-	//
-	unsigned int width(){ return term_width; };
-
-	//
-	unsigned int height(){ return term_height; };
 
 	// Добавить изображение для отображения
 	void addImage(const NTImage &img);
@@ -57,9 +51,20 @@ public:
 	// Проверить, поддерживается ли RGB
 	bool isRgbSupported() const;  // Проверка поддержки RGB цветов
 
+	// Получить текущие размеры
+	int width() const { return term_width.load(); }
+	int height() const { return term_height.load(); }
+
 private:
+//--
+	//std::vector<std::function<void()>> _resizeObservers;
+	std::vector<std::pair<size_t, std::function<void()>>> _resizeObservers;
+	size_t _nextObserverId = 0;
+	std::mutex _observersMutex;
+//--
 	std::vector<const NTImage*> _images;
 
+	std::mutex term_mutex;
 	std::mutex images_mutex;           // Мьютекс для доступа к images
 	std::mutex colors_mutex;           // Мьютекс для работы с цветами
 	std::atomic<bool> running;         // Флаг работы потока отрисовки
@@ -90,7 +95,8 @@ private:
 	void drawImages();
 
 	// Обработчик сигнала изменения размера терминала
-	static void handleResize(int sig);
+	//static void handleResize(int sig);
+	static void handleResize(int sig, NTDisplay* display);  // Добавляем параметр
 };
 
 #endif // NTDISPLAY_H

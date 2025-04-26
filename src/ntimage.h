@@ -63,6 +63,16 @@ public:
 	 */
 	NTImage& operator=(const NTImage& other);
 
+	/*! \brief      Sets the image data
+	 *  \param      image   Vector of strings representing the new image data
+	 */
+	void setImage(const std::vector<std::string>& image);
+
+	/*! \brief      Gets the image data
+	 *  \return     Constant reference to the image data vector
+	 */
+	const std::vector<std::string>& image() const;
+
 	/*! \brief      Sets the X coordinate
 	 *  \param      x   New X coordinate value
 	 */
@@ -83,15 +93,11 @@ public:
 	 */
 	int y() const;
 
-	/*! \brief      Sets the image data
-	 *  \param      image   Vector of strings representing the new image data
+	/*! \brief      Sets the X, Y coordinate
+	 *  \param[in]	x   New X coordinate value
+	 *	\param[in]	y   New Y coordinate value
 	 */
-	void setImage(const std::vector<std::string>& image);
-
-	/*! \brief      Gets the image data
-	 *  \return     Constant reference to the image data vector
-	 */
-	const std::vector<std::string>& image() const;
+	void setPosition(int x, int y);
 
 	/*! \brief      Sets the color pair
 	 *  \param      colorPair   New color pair value

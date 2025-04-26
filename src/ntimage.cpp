@@ -77,6 +77,14 @@ int NTImage::y() const
 }
 
 //
+void NTImage::setPosition(int x, int y)
+{
+	_x = x;
+	_y = y;
+	notifyObservers();
+}
+
+//
 unsigned int NTImage::width() const
 {
 	return _width;

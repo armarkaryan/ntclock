@@ -7,6 +7,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/ioctl.h>
 
 #include "ntdisplay.h"
 
@@ -43,13 +44,6 @@ void NTDisplay::addImage(const NTImage &img)
 	_needsRedraw = true;
 
 }
-/*
-void addChild(const NTImage &img) {
-		images.push_back(&img);
-		// Подписываемся на изменения ребёнка
-		img.addObserver([this]() { _needsRedraw = true; });
-	}
-*/
 
 // Очистить все изображения
 void NTDisplay::clearImages()
@@ -166,35 +160,50 @@ void NTDisplay::stop() {
 
 //
 void NTDisplay::worker() {
-        signal(SIGWINCH, [](int) {});
 
-        getmaxyx(stdscr, term_height, term_width);
+static int x =0;
+	while (running) {
+		// Проверка изменения размера терминала
+		//std::unique_lock<std::mutex> lock(term_mutex);
+		//std::unique_lock<std::mutex> lock(images_mutex);
+		struct winsize w;
+		ioctl(0, TIOCGWINSZ, &w);
+		int new_height = w.ws_row;
+		int new_width = w.ws_col;
+		resizeterm(new_height, new_width);
 
-        while (running) {
-            // Проверка изменения размера терминала
-            int new_width, new_height;
-            getmaxyx(stdscr, new_height, new_width);
-            
-            if (new_width != term_width || new_height != term_height) {
-                term_width = new_width;
-                term_height = new_height;
-                clear();
-                refresh();
-				_needsRedraw = true;
-            }
+		if (new_width != term_width || new_height != term_height) {
+			term_width = new_width;
+			term_height = new_height;
+			clear();
+			refresh();
+			_needsRedraw = true;
 
-            // Отрисовка изображений
-			if (_needsRedraw) {
-                drawImages();
-				_needsRedraw = false;
-            }
+			// Уведомляем наблюдателей
+			std::lock_guard<std::mutex> lock(_observersMutex);
+			for (auto& [id, observer] : _resizeObservers) {
+				observer();  // Вызываем только функцию, игнорируя id
+			}
 
-            // Ожидание событий
-            std::unique_lock<std::mutex> lock(images_mutex);
-            cv.wait_for(lock, std::chrono::milliseconds(100));
-        }
+			//
+			init_pair(2, COLOR_RED, COLOR_BLACK);
+			attron(COLOR_PAIR(2));
+			mvprintw(0, 0, "Terminal size: %dx%d", height(), width());
+		}
 
-        endwin();
+
+		// Остальной код...
+		// Отрисовка изображений
+		if (_needsRedraw) {
+			drawImages();
+			_needsRedraw = false;
+		}
+
+		// Ожидание событий
+		std::unique_lock<std::mutex> lock(images_mutex);
+		cv.wait_for(lock, std::chrono::milliseconds(100));
+	}
+	endwin();
 }
 
 void NTDisplay::drawImages() {
@@ -215,8 +224,4 @@ void NTDisplay::drawImages() {
 	}
 
 	refresh();
-}
-
-// Обработчик сигнала изменения размера терминала
-void NTDisplay::handleResize(int sig){
 }
