@@ -22,13 +22,7 @@ public:
 	// Конструктор/деструктор
     NTDisplay(NTObject* parent = nullptr, const std::string& name ="");
     ~NTDisplay(); // Освобождает ресурсы ncurses и останавливает поток
-/*
-	//
-	unsigned int width(){ return term_width; };
 
-	//
-	unsigned int height(){ return term_height; };
-*/
 	// Добавить изображение для отображения
 	void addImage(const NTImage &img);
 
@@ -56,19 +50,10 @@ public:
 
 	// Проверить, поддерживается ли RGB
 	bool isRgbSupported() const;  // Проверка поддержки RGB цветов
-//--
-	// Добавить наблюдателя за изменением размера
-	//void addResizeObserver(std::function<void()> observer);
-	size_t addResizeObserver(std::function<void()> observer);
-
-	// Удалить наблюдателя
-	//void removeResizeObserver(std::function<void()> observer);
-	void removeResizeObserver(size_t id);
 
 	// Получить текущие размеры
 	int width() const { return term_width.load(); }
 	int height() const { return term_height.load(); }
-//--
 
 private:
 //--
@@ -79,6 +64,7 @@ private:
 //--
 	std::vector<const NTImage*> _images;
 
+	std::mutex term_mutex;
 	std::mutex images_mutex;           // Мьютекс для доступа к images
 	std::mutex colors_mutex;           // Мьютекс для работы с цветами
 	std::atomic<bool> running;         // Флаг работы потока отрисовки
@@ -109,7 +95,8 @@ private:
 	void drawImages();
 
 	// Обработчик сигнала изменения размера терминала
-	static void handleResize(int sig);
+	//static void handleResize(int sig);
+	static void handleResize(int sig, NTDisplay* display);  // Добавляем параметр
 };
 
 #endif // NTDISPLAY_H

@@ -7,23 +7,23 @@
 #include "nttypes.h"
 
 // Custom image
-const struct nt::Image image_custom = {
+const struct nt::Image image_colon = {
 	{	// img
-		"  XXXX  ",
-		" X    X ",
-		" X  X X ",
-		" X  X X ",
-		" X X  X ",
-		" X X  X ",
-		" X    X ",
-		"  XXXX  "
+		"        ",
+		"   XX   ",
+		"   XX   ",
+		"        ",
+		"        ",
+		"   XX   ",
+		"   XX   ",
+		"        "
 	},
 	8,	// width
 	8	// height
 };
 
 // Custom image
-const struct nt::Image image_colon = {
+const struct nt::Image image_custom = {
 	{	// img
 		"This is a custom",
 		"size image that",

@@ -10,7 +10,6 @@ OBJ_DIR := obj
 SOURCES	:=	$(SRC_DIR)/ntobject.cpp \
 			$(SRC_DIR)/ntimage.cpp \
 			$(SRC_DIR)/ntdisplay.cpp \
-			$(SRC_DIR)/ntlayoutmanager.cpp \
 			$(SRC_DIR)/ntclock.cpp
 
 
