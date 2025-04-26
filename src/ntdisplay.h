@@ -12,7 +12,7 @@
 #include <signal.h>
 
 #include "nttypes.h"
-#include "image_custom.h"
+#include "images.h"
 #include "digits_8x8.h"
 #include "digits_16x16.h"
 #include "ntimage.h"

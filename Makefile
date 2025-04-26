@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -c -Wall -Isrc
+CFLAGS := -c -Wall -Isrc -std=c++17
 LDFLAGS := -lncurses -lpthread
 SRC_DIR := src
 BUILD_DIR := build
