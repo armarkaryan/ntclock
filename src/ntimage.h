@@ -141,12 +141,12 @@ public:
 
 private:
 	std::vector<std::string> _image;	/*!< Image data storage */
-	unsigned int _width;				/*!< Image width */
-	unsigned int _height;				/*!< Image height */
-	bool _transparent;					/*!< Transparency flag */
-	int _x;								/*!< X coordinate */
-	int _y;								/*!< Y coordinate */
+	unsigned short _x;					/*!< X coordinate */
+	unsigned short _y;					/*!< Y coordinate */
 	nt::ColorPair _colorPair;			/*!< Color pair attributes */
+	unsigned short _width;				/*!< Image width */
+	unsigned short _height;				/*!< Image height */
+	bool _transparent;					/*!< Transparency flag */
 
 	/*! \brief      Copies data from another NTImage object
 	 *  \param      other   Reference to source NTImage object

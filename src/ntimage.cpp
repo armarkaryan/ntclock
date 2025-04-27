@@ -4,8 +4,12 @@
 
 // Простой конструктор
 NTImage::NTImage(NTObject* parent, const std::string& name)
-	: NTObject(parent, name), _width(8), _height(8), _transparent(true),
-	  _x(0), _y(0), _colorPair(nt::DEFAULT)
+	: NTObject(parent, name),
+	_image({""}),
+	_x(0), _y(0),
+	_colorPair(nt::DEFAULT),
+	_width(0), _height(0),
+	_transparent(true)
 {
     // To do... image, width, height, chanals
 	notifyObservers();
@@ -15,7 +19,10 @@ NTImage::NTImage(NTObject* parent, const std::string& name)
 NTImage::NTImage(NTObject* parent, const std::string& name,
                const std::vector<std::string>& image,
 			   int x, int y, nt::ColorPair colorPair)
-	: NTObject(parent, name), _image(image), _x(x), _y(y), _colorPair(colorPair)
+	: NTObject(parent, name),
+	_image(image),
+	_x(x), _y(y),
+	_colorPair(colorPair)
 {
     // To do... image, width, height, chanals
 	notifyObservers();
@@ -137,7 +144,10 @@ void NTImage::setTransparent(bool transparent)
 }
 
 //
-bool NTImage::isTransparent() const { return _transparent; }
+bool NTImage::isTransparent() const
+{
+	return _transparent;
+}
 
 //
 void NTImage::copyFrom(const NTImage& other)

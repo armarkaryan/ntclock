@@ -1,19 +1,22 @@
 ﻿#include <iostream>
 #include <sys/ioctl.h>
+#include <mutex>
+#include <chrono>
+#include <ctime>
+#include <thread>
 
 #include "ntobject.h"
 #include "digits_8x8.h"
 #include "digits_16x16.h"
 #include "ntdisplay.h"
 
-int _hour = 98;
-int _min = 76;
-int _sec = 54;
+int _hour = 0;
+int _min = 0;
+int _sec = 0;
+std::mutex localtime_mutex;  // Мьютекс для синхронизации доступа к времени
 
-//
 void printTimeSym(const NTDisplay &display, NTImage &sym, const struct nt::Image &img, int pos)
 {
-	//
 	int screenWidth = display.width();
 	int screenHeight = display.height();
 
@@ -28,14 +31,11 @@ void printTimeSym(const NTDisplay &display, NTImage &sym, const struct nt::Image
 	sym.setColorPair(nt::RED_TEXT);
 }
 
-//
-//void handle_winch(int sig) {}
-
-int main(int argc, char* argv[]) {
-	//
+int main(int argc, char* argv[])
+{
 	NTDisplay display;
 
-	if(!display.isRgbSupported()){
+	if(!display.isRgbSupported()) {
 		display.fillBackground(COLOR_BLUE);
 		std::cerr << "RGB Not supported." << std::endl;
 		sleep(3);
@@ -43,8 +43,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Создание и добавление изображений
-	NTImage hh_hi(&display, "hh_hi", digits_8x8[0].img, 0, 0, nt::ColorPair::WHITE_TEXT);
-	NTImage hh_lo(&display, "hh_lo", digits_8x8[1].img, 0, 0, nt::ColorPair::WHITE_TEXT);
+	NTImage hh_hi(&display, "hh_hi", digits_8x8[0].img, 0, 0, nt::ColorPair::CUSTOM);
+	NTImage hh_lo(&display, "hh_lo", digits_8x8[1].img, 0, 0, nt::ColorPair::CUSTOM);
 	NTImage colon_h(&display, "colon_h", image_colon.img, 0, 0, nt::ColorPair::WHITE_TEXT);
 	NTImage mm_hi(&display, "mm_hi", digits_8x8[2].img, 0, 0, nt::ColorPair::WHITE_TEXT);
 	NTImage mm_lo(&display, "mm_lo", digits_8x8[3].img, 0, 0, nt::ColorPair::WHITE_TEXT);
@@ -61,34 +61,21 @@ int main(int argc, char* argv[]) {
 	display.addImage(ss_hi);
 	display.addImage(ss_lo);
 
-	// Set signal handler (SIGWINCH)
-	//signal(SIGWINCH, handle_winch);
+	display.fillBackgroundRgb(50, 50, 100);
+	display.setRgbColor(255, 255, 0, 50, 50, 100);
 
-	//
-	display.fillBackgroundRgb(30, 30, 100);
-	//display.fillBackgroundRgb(0, 0, 0);
-	display.setRgbColor(255, 10, 0, 30, 30, 100);
-
-	// Wait for Space key to exit
 	int ch;
 	while ((ch = getch()) != ' ') {
-		//while(1){
-
-		// Protect cw_Clock
-		//std::mutex clock_mutex;
-		static std::mutex localtime_mutex;  // For std::gmtime
-
 		const auto now = std::chrono::system_clock::now();
 		const std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 		std::tm now_tm;
 
-		std::lock_guard<std::mutex> lock(localtime_mutex);
-		// Для конкретного часового пояса (например, +3 часа)
-		const int timezone_offset = 3 * 3600; // 3 часа в секундах
-		std::time_t adjusted_time = now_time + timezone_offset;
-		now_tm = *std::gmtime(&adjusted_time);
+		{
+			std::lock_guard<std::mutex> lock(localtime_mutex);
+			// Используем локальное время вместо GMT с фиксированным смещением
+			now_tm = *std::localtime(&now_time);
+		}
 
-		//std::lock_guard<std::mutex> lock(clock_mutex);
 		_hour = now_tm.tm_hour;
 		_min = now_tm.tm_min;
 		_sec = now_tm.tm_sec;
@@ -112,12 +99,8 @@ int main(int argc, char* argv[]) {
 		printTimeSym(display, ss_lo, digits_8x8[_sec%10], 7);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		//sleep(1);
-
 	}
 
 	std::cout << "Program finished." << std::endl;
-
 	return EXIT_SUCCESS;
-
 }

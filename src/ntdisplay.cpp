@@ -209,7 +209,9 @@ void NTDisplay::worker() {
 
 void NTDisplay::drawImages() {
 	for (const auto& img : _images) {
-		attron(COLOR_PAIR(img->colorPair()));
+
+		attron(COLOR_PAIR(9));
+		//attron(COLOR_PAIR(img->colorPair()));
 
 		for (size_t y = 0; y < img->image().size() && (img->y() + static_cast<int>(y)) < term_height; y++) {
 			if (img->y() + static_cast<int>(y) < 0) continue;
@@ -221,7 +223,8 @@ void NTDisplay::drawImages() {
 			}
 		}
 
-		attroff(COLOR_PAIR(img->colorPair()));
+		//attroff(COLOR_PAIR(img->colorPair()));
+		attroff(COLOR_PAIR(9));
 	}
 
 	refresh();
