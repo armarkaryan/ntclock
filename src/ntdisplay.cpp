@@ -155,13 +155,13 @@ void NTDisplay::stop() {
 	if (worker_thread.joinable()) {
 		worker_thread.join();
 	}
+	_images.clear(); // Check f needed
 	endwin();
 }
 
 //
 void NTDisplay::worker() {
-
-static int x =0;
+	//
 	while (running) {
 		// Проверка изменения размера терминала
 		//std::unique_lock<std::mutex> lock(term_mutex);
@@ -189,6 +189,7 @@ static int x =0;
 			init_pair(2, COLOR_RED, COLOR_BLACK);
 			attron(COLOR_PAIR(2));
 			mvprintw(0, 0, "Terminal size: %dx%d", height(), width());
+			attroff(COLOR_PAIR(2));
 		}
 
 
