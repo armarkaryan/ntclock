@@ -163,6 +163,7 @@ void NTDisplay::stop() {
 void NTDisplay::worker() {
 	//
 	while (running) {
+/*
 		// Проверка изменения размера терминала
 		//std::unique_lock<std::mutex> lock(term_mutex);
 		//std::unique_lock<std::mutex> lock(images_mutex);
@@ -171,8 +172,29 @@ void NTDisplay::worker() {
 		int new_height = w.ws_row;
 		int new_width = w.ws_col;
 		resizeterm(new_height, new_width);
+*/
 
-		if (new_width != term_width || new_height != term_height) {
+		// Проверка изменения размера терминала
+		// Синхронизация доступа к терминалу
+		int new_height;
+		int new_width;
+		struct winsize w;
+
+		{
+			std::unique_lock<std::mutex> term_lock(term_mutex);
+			if (ioctl(STDIN_FILENO, TIOCGWINSZ, &w) == -1) {
+				perror("ioctl failed");
+				return;
+			}
+			new_height = w.ws_row;
+			new_width = w.ws_col;
+		}
+
+		resizeterm(new_height, new_width);
+		refresh(); // Обязательно обновить экран после изменения размера
+
+		if (new_width != term_width || new_height != term_height)
+		{
 			term_width = new_width;
 			term_height = new_height;
 			clear();
@@ -180,16 +202,21 @@ void NTDisplay::worker() {
 			_needsRedraw = true;
 
 			// Уведомляем наблюдателей
-			std::lock_guard<std::mutex> lock(_observersMutex);
-			for (auto& [id, observer] : _resizeObservers) {
-				observer();  // Вызываем только функцию, игнорируя id
+			{
+				std::lock_guard<std::mutex> lock(_observersMutex);
+				for (auto& [id, observer] : _resizeObservers) {
+					observer();  // Вызываем только функцию, игнорируя id
+				}
 			}
 
 			//
-			init_pair(2, COLOR_RED, COLOR_BLACK);
-			attron(COLOR_PAIR(2));
-			mvprintw(0, 0, "Terminal size: %dx%d", height(), width());
-			attroff(COLOR_PAIR(2));
+			{
+				std::unique_lock<std::mutex> lock(images_mutex);
+				init_pair(2, COLOR_RED, COLOR_BLACK);
+				attron(COLOR_PAIR(2));
+				mvprintw(0, 0, "Terminal size: %dx%d", height(), width());
+				attroff(COLOR_PAIR(2));
+			}
 		}
 
 
@@ -208,6 +235,7 @@ void NTDisplay::worker() {
 }
 
 void NTDisplay::drawImages() {
+//std::unique_lock<std::mutex> lock(images_mutex);
 	for (const auto& img : _images) {
 
 		attron(COLOR_PAIR(9));
