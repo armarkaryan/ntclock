@@ -181,7 +181,8 @@ void NTDisplay::worker() {
 		struct winsize w;
 
 		{
-			std::unique_lock<std::mutex> term_lock(term_mutex);
+			//std::unique_lock<std::mutex> term_lock(term_mutex);
+			std::lock_guard<std::mutex> lock(term_mutex);
 			if (ioctl(STDIN_FILENO, TIOCGWINSZ, &w) == -1) {
 				perror("ioctl failed");
 				return;
@@ -211,11 +212,12 @@ void NTDisplay::worker() {
 
 			//
 			{
-				std::unique_lock<std::mutex> lock(images_mutex);
-				init_pair(2, COLOR_RED, COLOR_BLACK);
-				attron(COLOR_PAIR(2));
+				//std::unique_lock<std::mutex> lock(images_mutex);
+				std::lock_guard<std::mutex> lock(colors_mutex);
+				init_pair(5, COLOR_RED, COLOR_BLACK);
+				attron(COLOR_PAIR(5));
 				mvprintw(0, 0, "Terminal size: %dx%d", height(), width());
-				attroff(COLOR_PAIR(2));
+				attroff(COLOR_PAIR(5));
 			}
 		}
 
@@ -238,8 +240,8 @@ void NTDisplay::drawImages() {
 //std::unique_lock<std::mutex> lock(images_mutex);
 	for (const auto& img : _images) {
 
-		attron(COLOR_PAIR(9));
-		//attron(COLOR_PAIR(img->colorPair()));
+		//attron(COLOR_PAIR(9));
+		attron(COLOR_PAIR(img->colorPair()));
 
 		for (size_t y = 0; y < img->image().size() && (img->y() + static_cast<int>(y)) < term_height; y++) {
 			if (img->y() + static_cast<int>(y) < 0) continue;
@@ -251,8 +253,8 @@ void NTDisplay::drawImages() {
 			}
 		}
 
-		//attroff(COLOR_PAIR(img->colorPair()));
-		attroff(COLOR_PAIR(9));
+		attroff(COLOR_PAIR(img->colorPair()));
+		//attroff(COLOR_PAIR(9));
 	}
 
 	refresh();
