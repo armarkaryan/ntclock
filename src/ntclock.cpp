@@ -70,15 +70,16 @@ int main(int argc, char* argv[])
 		const std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 		std::tm now_tm;
 
-		{
-			std::lock_guard<std::mutex> lock(localtime_mutex);
-			// Используем локальное время вместо GMT с фиксированным смещением
-			now_tm = *std::localtime(&now_time);
-		}
+		// Используем локальное время вместо GMT с фиксированным смещением
+		now_tm = *std::localtime(&now_time);
+
 
 		_hour = now_tm.tm_hour;
 		_min = now_tm.tm_min;
 		_sec = now_tm.tm_sec;
+
+		{
+		std::lock_guard<std::mutex> lock(localtime_mutex);
 
 		// Print hours
 		printTimeSym(display, hh_hi, digits_8x8[(_hour/10)], 0);
@@ -97,6 +98,7 @@ int main(int argc, char* argv[])
 		// Print seconds
 		printTimeSym(display, ss_hi, digits_8x8[_sec/10], 6);
 		printTimeSym(display, ss_lo, digits_8x8[_sec%10], 7);
+		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}

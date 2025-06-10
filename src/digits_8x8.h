@@ -1,5 +1,5 @@
-#ifndef DIGITS_8x8_H
-#define DIGITS_8x8_H
+#ifndef _DIGITS_8x8_H_
+#define _DIGITS_8x8_H_
 
 #include <vector>
 #include <string>
@@ -180,4 +180,4 @@ const std::vector<nt::Image> digits_8x8 = {
 	digit_8x8_9
 };
 
-#endif	// DIGITS_8x8_H
+#endif	// _DIGITS_8x8_H_

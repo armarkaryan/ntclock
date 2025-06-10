@@ -19,6 +19,8 @@
 #include <stdexcept>
 /*! \brief  Standard algorithms */
 #include <algorithm>
+/*! \brief  Mutex library */
+#include <mutex>
 
 /*! \brief  Base NT object */
 #include "ntobject.h"
@@ -140,6 +142,7 @@ public:
 	bool isTransparent() const;
 
 private:
+	mutable std::mutex _mutex;			/*!< Thread-safe mutex */
 	std::vector<std::string> _image;	/*!< Image data storage */
 	unsigned short _x;					/*!< X coordinate */
 	unsigned short _y;					/*!< Y coordinate */

@@ -7,9 +7,11 @@
 #include <atomic>
 #include <thread>
 #include <condition_variable>
-#include <ncurses.h>
 #include <unistd.h>
 #include <signal.h>
+
+//#define _XOPEN_SOURCE_EXTENDED
+#include <ncurses.h>
 
 #include "nttypes.h"
 #include "images.h"
@@ -73,8 +75,8 @@ private:
 	std::atomic<int> term_height;      // Текущая высота терминала
 	std::thread worker_thread;         // Поток отрисовки
 	std::condition_variable cv;        // Условная переменная для синхронизации
-	short bg_color;                    // Текущий цвет фона
-	bool supports_rgb;                 // Флаг поддержки RGB
+	std::atomic<short> bg_color;                    // Текущий цвет фона
+	std::atomic<bool> supports_rgb;                 // Флаг поддержки RGB
 
 	// Инициализация библиотеки ncurses
 	void initNcurses();

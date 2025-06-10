@@ -62,9 +62,10 @@ void NTDisplay::setCustomColor(short text_color, short bg_color) {
 // Установить RGB-цвет текста и фона (если поддерживается)
 bool NTDisplay::setRgbColor(short r_text, short g_text, short b_text,
                      short r_bg, short g_bg, short b_bg) {
+	std::lock_guard<std::mutex> lock(colors_mutex);
 	if (!supports_rgb) return false;
 	
-	std::lock_guard<std::mutex> lock(colors_mutex);
+	//std::lock_guard<std::mutex> lock(colors_mutex);
 	// Создаем новый цвет в палитре
 	init_color(100, r_text * 1000 / 255, g_text * 1000 / 255, b_text * 1000 / 255);
 	init_color(101, r_bg * 1000 / 255, g_bg * 1000 / 255, b_bg * 1000 / 255);
@@ -85,9 +86,10 @@ void NTDisplay::fillBackground(short bg_color) {
 
 // Залить весь терминал RGB-цветом фона (если поддерживается)
 bool NTDisplay::fillBackgroundRgb(short r, short g, short b) {
+	std::lock_guard<std::mutex> lock(colors_mutex);
 	if (!supports_rgb) return false;
 	
-	std::lock_guard<std::mutex> lock(colors_mutex);
+	//std::lock_guard<std::mutex> lock(colors_mutex);
 	// Создаем новый цвет фона
 	init_color(102, r * 1000 / 255, g * 1000 / 255, b * 1000 / 255);
 	// Обновляем пару DEFAULT
@@ -238,10 +240,11 @@ void NTDisplay::worker() {
 
 void NTDisplay::drawImages() {
 //std::unique_lock<std::mutex> lock(images_mutex);
+std::lock_guard<std::mutex> lock(images_mutex);
 	for (const auto& img : _images) {
 
-		//attron(COLOR_PAIR(9));
-		attron(COLOR_PAIR(img->colorPair()));
+		attron(COLOR_PAIR(9));
+		//attron(COLOR_PAIR(img->colorPair()));
 
 		for (size_t y = 0; y < img->image().size() && (img->y() + static_cast<int>(y)) < term_height; y++) {
 			if (img->y() + static_cast<int>(y) < 0) continue;
@@ -249,12 +252,14 @@ void NTDisplay::drawImages() {
 			const std::string& line = img->image()[y];
 			for (size_t x = 0; x < line.size() && (img->x() + static_cast<int>(x)) < term_width; x++) {
 				if (img->x() + static_cast<int>(x) < 0) continue;
-				mvaddch(img->y() + static_cast<int>(y), img->x() + static_cast<int>(x), line[x]);
+				//mvaddch(img->y() + static_cast<int>(y), img->x() + static_cast<int>(x), line[x]);
+				if(line[x] == 'X') mvaddch(img->y() + static_cast<int>(y), img->x() + static_cast<int>(x), ' ' | A_REVERSE);
+				if(line[x] == ' ') mvaddch(img->y() + static_cast<int>(y), img->x() + static_cast<int>(x), ' ');
 			}
 		}
 
-		attroff(COLOR_PAIR(img->colorPair()));
-		//attroff(COLOR_PAIR(9));
+		//attroff(COLOR_PAIR(img->colorPair()));
+		attroff(COLOR_PAIR(9));
 	}
 
 	refresh();
